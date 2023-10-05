@@ -1,7 +1,9 @@
-# UwU
-# Slayyy 💅
-## GOEDKOOP QUIZ IDEE DING
+# THE EEN TEAM
+## Betaalbare interactieve manier van leren
 
-main device usb c aan pc/laptop web interface ofzo
+### Definities
+Hoofdgebruiker - Degene die de quiz presenteert
+Gebruiker - Degenen die antwoorden zullen invoeren
 
-radio connectie aan andere devices waar je antwoorden in kan vullen
+Device - Apparaat dat wordt gebruikt om de antwoorden in te voeren
+Hoofddevice - Apparaat dat is verbonden aan de computer en de andere devices aanstuurt
