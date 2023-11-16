@@ -1,3 +1,9 @@
+@font-face {
+    font-family: Museo;
+    src: url(fonts/Museo500.otf);
+}
+
+
 body {
     background-color: #202020;
     margin: 0;
