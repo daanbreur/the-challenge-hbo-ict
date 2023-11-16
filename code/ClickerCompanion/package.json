@@ -1,0 +1,22 @@
+{
+  "name": "clickercompanion",
+  "version": "0.0.1",
+  "description": "clickercompanion for classclick",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daanbreur/the-challenge-hbo-ict.git"
+  },
+  "author": "ClassClick BV",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/daanbreur/the-challenge-hbo-ict/issues"
+  },
+  "homepage": "https://github.com/daanbreur/the-challenge-hbo-ict#readme",
+  "devDependencies": {
+    "electron": "^27.1.0"
+  }
+}
