@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "code/clickercompanion"
+		},
+		{
+			"path": "code/firmware"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			".eslintrc": "jsonc",
+			".prettierrc": "jsonc",
+			".eslintignore": "ignore"
+		},
+		"javascript.validate.enable": false,
+		"javascript.format.enable": false,
+		"typescript.format.enable": false
+	}
+}
