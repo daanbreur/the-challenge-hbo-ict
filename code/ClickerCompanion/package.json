@@ -79,7 +79,6 @@
     }
   },
   "dependencies": {
-    "@mniota/react-webserial-hook": "github:mniota/react-webserial-hook",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^6.1.4",
