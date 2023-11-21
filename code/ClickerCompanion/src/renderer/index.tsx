@@ -11,3 +11,12 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
   console.log(arg);
 });
 window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
+
+const asyncDatabase = async (data: String) => {
+  return new Promise((resolve) => {
+    window.electron.ipcRenderer.once('database-communication', (arg) => {
+      resolve(arg);
+    });
+    window.electron.ipcRenderer.sendMessage('database-communication', data);
+  });
+};
