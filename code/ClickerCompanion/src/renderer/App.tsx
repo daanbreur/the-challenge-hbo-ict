@@ -4,7 +4,13 @@ import logo from '../../assets/logo.svg';
 import 'tailwindcss/tailwind.css';
 
 async function requestPort() {
-  const port = await navigator.serial.requestPort();
+  let port: SerialPort | null = null;
+  navigator.serial
+    .requestPort()
+    .then((_port) => (port = _port))
+    .catch((_a) => console.error(_a));
+
+  if (port == null) return;
   const portInfo = port.getInfo();
   console.log(port, portInfo);
 }
