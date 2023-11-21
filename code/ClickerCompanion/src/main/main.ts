@@ -12,6 +12,7 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import sqlite from 'sqlite3';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -22,6 +23,29 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+const sqlite3 = sqlite.verbose();
+const db = new sqlite3.Database(
+  path.join(app.getPath('userData'), 'database.db'),
+);
+
+db.serialize(() => {
+  db.run(
+    'CREATE TABLE IF NOT EXISTS `quizes` (`id` integer PRIMARY KEY,`title` varchar(255),`description` varchar(255),`created_at` timestamp,`updated_at` timestamp)',
+  );
+  db.run(
+    'CREATE TABLE IF NOT EXISTS `questions` (`id` integer PRIMARY KEY,`quiz_id` integer,`answer_1` varchar(255),`answer_2` varchar(255),`answer_3` varchar(255),`answer_4` varchar(255),`answer_1_valid` bool,`answer_2_valid` bool,`answer_3_valid` bool,`answer_4_valid` bool,FOREIGN KEY (`quiz_id`) REFERENCES `quizes` (`id`))',
+  );
+  db.run(
+    'CREATE TABLE IF NOT EXISTS `answers` (`id` integer PRIMARY KEY,`device_id` integer,`question_id` integer,`room_id` integer,`timestamp` timestamp,`answer` varchar(255),FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`),FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`),FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`))',
+  );
+  db.run(
+    'CREATE TABLE IF NOT EXISTS `devices` (`id` integer PRIMARY KEY,`username` varchar(255))',
+  );
+  db.run(
+    'CREATE TABLE IF NOT EXISTS `rooms` (`id` integer PRIMARY KEY,`quiz_id` integer,`started` timestamp,FOREIGN KEY (`quiz_id`) REFERENCES `quizes` (`id`))',
+  );
+});
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -138,6 +162,7 @@ const createWindow = async () => {
  */
 
 app.on('window-all-closed', () => {
+  db.close();
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   if (process.platform !== 'darwin') {
