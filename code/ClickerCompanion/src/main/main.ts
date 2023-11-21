@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -115,7 +115,13 @@ const createWindow = async () => {
 
       console.log(portList);
       if (portList && portList.length > 0) {
-        callback(portList[0].portId);
+        const id = dialog.showMessageBoxSync({
+          title: 'ClickerCompanion',
+          message: 'Please pick the correct serial device',
+          buttons: portList.map((a) => `${a.displayName} (${a.portName})`),
+        });
+        console.log(portList[id]);
+        callback(portList[id].portId);
       } else {
         callback(''); // Could not find any matching devices
       }
