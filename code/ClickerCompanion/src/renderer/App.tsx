@@ -18,16 +18,17 @@ import 'tailwindcss/tailwind.css';
 
 function Hello() {
   return (
-    <div>
-      <div className="Hello">
-        <img width="200" alt="icon" src={logo} />
+    <div className="dark min-h-screen text-text font-body bg-background">
+      <div className="h-[40vh] flex justify-center items-center py-5">
+        <img className="" width="20%" alt="icon" src={logo} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-accent text-text">1</div>
-        <div className="">2</div>
-        <div className="">3</div>
-        <div className="">4</div>
+      <div className="h-[50vh] grid grid-cols-2 gap-4">
+        <div className="flex-auto flex justify-center items-center bg-button1 text-2xl rounded-lg ml-10 text-center">Start</div>
+        <div className="flex-auto flex justify-center items-center bg-button2 text-2xl rounded-lg mr-10 text-center">Quiz</div>
+        <div className="flex-auto flex justify-center items-center bg-button3 text-2xl rounded-lg ml-10 text-center">Devices</div>
+        <div className="flex-auto flex justify-center items-center bg-button4 text-2xl rounded-lg mr-10 text-center">Settings</div>
       </div>
+      <footer className="text-center pt-5">ClickerCompanion by ClassClick B.V. 2023</footer>
     </div>
   );
 }

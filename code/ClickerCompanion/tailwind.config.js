@@ -1,4 +1,3 @@
-const colors = require('tailwindcss/colors');
 
 module.exports = {
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],
@@ -15,8 +14,8 @@ module.exports = {
       '5xl': '4.210rem',
     },
     fontFamily: {
-      heading: 'Poppins',
-      body: 'Poppins',
+      heading: 'Museo',
+      body: 'Museo',
     },
     fontWeight: {
       normal: '400',
