@@ -1,0 +1,109 @@
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 900'),
+    local('Museo-900'),
+    url('fonts/Museo-900.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 300 Italic'),
+    local('Museo-300Italic'),
+    url('fonts/Museo-300Italic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 100 Italic'),
+    local('Museo-100Italic'),
+    url('fonts/Museo-100Italic.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 100'),
+    local('Museo-100'),
+    url('fonts/Museo-100.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 700'),
+    local('Museo-700'),
+    url('fonts/Museo-700.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 700 Italic'),
+    local('Museo-700Italic'),
+    url('fonts/Museo-700Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 900 Italic'),
+    local('Museo-900Italic'),
+    url('fonts/Museo-900Italic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 300'),
+    local('Museo-300'),
+    url('fonts/Museo-300.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 500 Italic'),
+    local('Museo-500Italic'),
+    url('fonts/Museo-500Italic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Museo';
+  src:
+    local('Museo 500'),
+    local('Museo-500'),
+    url('fonts/Museo-500.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
