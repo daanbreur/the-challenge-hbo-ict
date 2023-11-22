@@ -1,6 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
-// import './App.css';
+import './globals.css';
+import './fonts.css';
 import 'tailwindcss/tailwind.css';
 
 // async function requestPort() {
@@ -22,7 +23,7 @@ function Hello() {
         <img width="200" alt="icon" src={logo} />
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <div className="">1</div>
+        <div className="bg-accent text-text">1</div>
         <div className="">2</div>
         <div className="">3</div>
         <div className="">4</div>
