@@ -1,9 +1,3 @@
-/**
- * Blink
- *
- * Turns on an LED on for one second,
- * then off for one second, repeatedly.
- */
 #include "Arduino.h"
 #include "Pins.h"
 #include "FastLED.h"
@@ -36,34 +30,66 @@ void setup()
   button2.setPressedState(HIGH);
   button3.setPressedState(HIGH);
   button4.setPressedState(HIGH);
+
+  ledStartup();
 }
 
 void loop()
 {
+  updateButtons();
+
+  if (button1.pressed()) {
+    Serial.println("Button1: got pressed");
+    setLed(1, 255, 255, 255);
+  }
+
+  if (button2.pressed()) {
+    Serial.println("Button2: got pressed");
+    setLed(2, 255, 255, 255);
+  }
+
+  if (button3.pressed()) {
+    Serial.println("Button3: got pressed");
+    setLed(3, 255, 255, 255);
+  }
+
+
+  if (button4.pressed()) {
+    Serial.println("Button4: got pressed");
+    setLed(4, 255, 255, 255);
+  }
+
+
+
+  if(button1.released()) {
+    setLed(1, 0, 0, 0);
+  }
+
+  if(button2.released()) {
+    setLed(2, 0, 0, 0);
+  }
+
+  if(button3.released()) {
+    setLed(3, 0, 0, 0);
+  }
+
+  if(button4.released()) {
+    setLed(4, 0, 0, 0);
+  }
+
+
+}
+
+void checkButtons() {
+
+}
+
+
+void updateButtons() {
   button1.update();
   button2.update();
   button3.update();
   button4.update();
-
-  if (button1.pressed())
-  {
-    Serial.println("Button1: me got pressed");
-  }
-
-  else if (button2.pressed())
-  {
-    Serial.println("Button2: me got pressed");
-  }
-
-  else if (button3.pressed())
-  {
-    Serial.println("Button3: me got pressed");
-  }
-
-  else if (button4.pressed())
-  {
-    Serial.println("Button4: me got pressed");
-  }
 }
 
 enum LED_ID
@@ -75,10 +101,25 @@ enum LED_ID
   D = 4
 };
 
+void ledStartup() {
+  setAllButton(0, 0, 0);
+  delay(10);
+  setAllButton(255, 255, 255);
+  delay(250);
+  setAllButton(0, 0, 0);
+}
+
 void setLed(int _ledId, int R, int G, int B)
 {
   LED_ID ledId = static_cast<LED_ID>(_ledId);
   setLed(ledId, R, G, B);
+}
+
+void setAllButton(int R, int G, int B) {
+    setLed(1, R, G, B);
+    setLed(2, R, G, B);
+    setLed(3, R, G, B);
+    setLed(4, R, G, B);
 }
 
 void setLed(LED_ID ledId, int R, int G, int B)

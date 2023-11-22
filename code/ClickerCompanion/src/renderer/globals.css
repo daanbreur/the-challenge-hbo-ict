@@ -9,19 +9,20 @@
     --primary: #4d1d4e;
     --secondary: #e7c3e9;
     --accent: #9f3da4;
+    --button1: #9f3da4;
+    --button2: #5DE35A;
+    --button3: #F46262;
+    --button4: #5d5ae2;
   }
   .dark {
     --text: #fefbfe;
-    --background: #120c12;
+    --background: #202020;
     --primary: #e1b1e2;
     --secondary: #3a163c;
     --accent: #bd5bc2;
-  }
-  .pornhub {
-    --text: #fefbfe;
-    --background: #000000;
-    --primary: #ffbd66;
-    --secondary: #e07f00;
-    --accent: #ff9100;
+    --button1: #E3B15B;
+    --button2: #5DE35A;
+    --button3: #F46262;
+    --button4: #5d5ae2;
   }
 }
