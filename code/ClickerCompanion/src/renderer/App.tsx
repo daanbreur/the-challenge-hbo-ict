@@ -1,53 +1,37 @@
+import { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
+
+import Quiz from './pages/Quiz';
+import MainMenu from './pages/MainMenu';
+import Devices from './pages/Devices';
+import Settings from './pages/Settings';
+
+import { IPageNames } from './types';
+
 import './globals.css';
 import './fonts.css';
 import 'tailwindcss/tailwind.css';
 
-// async function requestPort() {
-//   let port: SerialPort | null = null;
-//   navigator.serial
-//     .requestPort()
-//     .then((_port) => (port = _port))
-//     .catch((_a) => console.error(_a));
+function Renderer() {
+  const [currentPage, setCurrentPage] = useState<IPageNames>('mainmenu');
+  // const [selectedQuiz, setSelectedQuiz] = useState();
+  // const [connectedDevices, setConnectDevices] = useState();
 
-//   if (port == null) return;
-//   const portInfo = port.getInfo();
-//   console.log(port, portInfo);
-// }
+  if (currentPage === 'quiz-selection')
+    return <Quiz setCurrentPage={setCurrentPage} />;
+  if (currentPage === 'devices')
+    return <Devices setCurrentPage={setCurrentPage} />;
+  if (currentPage === 'settings')
+    return <Settings setCurrentPage={setCurrentPage} />;
 
-function Hello() {
-  return (
-    <div className="dark min-h-screen text-text font-body bg-background">
-      <div className="h-[40vh] flex justify-center items-center py-5">
-        <img draggable={false} className="" width="20%" alt="icon" src={logo} />
-      </div>
-      <div className="h-[50vh] grid grid-cols-2 gap-4">
-        <div className="flex-auto flex justify-center items-center hover:outline bg-button1 text-2xl rounded-lg ml-10 text-center">
-          Start
-        </div>
-        <div className="flex-auto flex justify-center items-center hover:outline bg-button2 text-2xl rounded-lg mr-10 text-center">
-          Quiz
-        </div>
-        <div className="flex-auto flex justify-center items-center hover:outline bg-button3 text-2xl rounded-lg ml-10 text-center">
-          Devices
-        </div>
-        <div className="flex-auto flex justify-center items-center hover:outline bg-button4 text-2xl rounded-lg mr-10 text-center">
-          Settings
-        </div>
-      </div>
-      <footer className="text-center pt-5">
-        ClickerCompanion by ClassClick B.V. 2023
-      </footer>
-    </div>
-  );
+  return <MainMenu setCurrentPage={setCurrentPage} />;
 }
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Hello />} />
+        <Route path="/" element={<Renderer />} />
       </Routes>
     </Router>
   );
