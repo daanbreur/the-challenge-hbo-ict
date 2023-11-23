@@ -9,9 +9,9 @@ export default function Devices({ setCurrentPage }: Props) {
     <PageWrapper>
       <div className="text-center text-3xl">Devices</div>
       <div className="grid grid-cols-1">
-        <div className="bg-lightbackground rounded-lg width-full">Quiz</div>
-        <div className="bg-lightbackground rounded-lg">Display</div>
-        <div className="bg-lightbackground rounded-lg">Audio</div>
+        <div className="bg-light_background rounded-lg width-full">Quiz</div>
+        <div className="bg-light_background rounded-lg">Display</div>
+        <div className="bg-light_background rounded-lg">Audio</div>
       </div>
       <footer className="text-center pt-5">
         ClickerCompanion by ClassClick B.V. 2023

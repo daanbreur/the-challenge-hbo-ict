@@ -23,17 +23,17 @@ export default function Settings({ setCurrentPage }: Props) {
         <div className="flex-1"> </div>
       </div>
       <div className="h-auto">
-        <div className="bg-lightbackground rounded-lg w-full h-auto mb-5">
+        <div className="bg-light_background rounded-lg w-full h-auto mb-5">
           <p className="text-center mb-3">Quiz</p>
           <div>Setting 1</div>
         </div>
-        <div className="bg-lightbackground rounded-lg w-full h-auto mb-5">
+        <div className="bg-light_background rounded-lg w-full h-auto mb-5">
           <p className="text-center mb-3">Video</p>
           <div>
             <input type="range" min="1" max="100" value="50" />
           </div>
         </div>
-        <div className="bg-lightbackground rounded-lg w-full h-auto">
+        <div className="bg-light_background rounded-lg w-full h-auto">
           <p className="text-center mb-3">Audio</p>
           <div>Setting 1</div>
         </div>

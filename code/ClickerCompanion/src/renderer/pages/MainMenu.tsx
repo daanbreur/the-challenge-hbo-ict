@@ -16,34 +16,25 @@ export default function MainMenu({ setCurrentPage }: Props) {
       <div className="h-[40vh] flex justify-center items-center py-5">
         <img draggable={false} className="h-full" alt="icon" src={logo} />
       </div>
-      <div className="h-[50vh] grid grid-cols-2 gap-4 font-bold text-3xl">
-        <div className="flex-auto flex justify-center items-center hover:outline bg-button1 rounded-lg ml-10 text-center">
-          Start
-        </div>
+      <div className="h-[50vh] grid grid-cols-2 gap-4 text-black_text font-bold text-3xl">
         <div
           onClick={() => {
             setCurrentPage('quiz-selection');
           }}
-          className="flex-auto flex justify-center items-center hover:outline bg-button2 rounded-lg mr-10 text-center"
+          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button1 rounded-lg ml-10 text-center"
         >
-          Quiz
-        </div>
-        <div
-          onClick={() => {
-            setCurrentPage('devices');
-          }}
-          className="flex-auto flex justify-center items-center hover:outline bg-button3 rounded-lg ml-10 text-center"
-        >
-          Devices
+          Start
         </div>
         <div
           onClick={() => {
             setCurrentPage('settings');
           }}
-          className="flex-auto flex justify-center items-center hover:outline bg-button4 rounded-lg mr-10 text-center"
+          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button2 rounded-lg mr-10 text-center"
         >
           Settings
         </div>
+        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button3 rounded-lg ml-10 text-center" />
+        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button4 rounded-lg mr-10 text-center" />
       </div>
       <footer className="text-center pt-5">
         ClickerCompanion by ClassClick B.V. 2023
