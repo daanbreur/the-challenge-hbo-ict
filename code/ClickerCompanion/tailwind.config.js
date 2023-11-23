@@ -24,8 +24,9 @@ module.exports = {
     },
     colors: {
       text: 'var(--text)',
+      black_text: 'var(--black-text)',
       background: 'var(--background)',
-      lightbackground: 'var(--lightbackground)',
+      light_background: 'var(--light-background)',
       primary: 'var(--primary)',
       secondary: 'var(--secondary)',
       accent: 'var(--accent)',
