@@ -5,6 +5,8 @@
     ".eslintignore": "ignore"
   },
 
+  "editor.indentSize": 2,
+
   "eslint.validate": [
     "javascript",
     "javascriptreact",
