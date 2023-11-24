@@ -21,7 +21,7 @@ export default function MainMenu({ setCurrentPage }: Props) {
           onClick={() => {
             setCurrentPage('quiz-selection');
           }}
-          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button1 rounded-lg ml-10 text-center"
+          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button1 rounded-lg ml-10 text-center cursor-pointer"
         >
           Start
         </div>
@@ -29,12 +29,12 @@ export default function MainMenu({ setCurrentPage }: Props) {
           onClick={() => {
             setCurrentPage('settings');
           }}
-          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button2 rounded-lg mr-10 text-center"
+          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button2 rounded-lg mr-10 text-center cursor-pointer"
         >
           Settings
         </div>
-        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button3 rounded-lg ml-10 text-center" />
-        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button4 rounded-lg mr-10 text-center" />
+        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button3 rounded-lg ml-10 text-center cursor-pointer" />
+        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button4 rounded-lg mr-10 text-center cursor-pointer" />
       </div>
       <footer className="text-center pt-5">
         ClickerCompanion by ClassClick B.V. 2023
