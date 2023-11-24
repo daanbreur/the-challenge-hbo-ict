@@ -24,7 +24,7 @@ void updateButtons() {
   button4.update();
 }
 
-void setLed(int ledId, int R, int G, int B)
+void setBlock(int ledId, int R, int G, int B)
 {
   switch (ledId)
   {
@@ -63,19 +63,54 @@ void setLed(int ledId, int R, int G, int B)
   FastLED.show();
 }
 
+void setLed(int ledId, int R, int G, int B)
+{
+  leds_buffer[ledId] = CRGB(R, G, B);
+  FastLED.show();
+}
+
 void setAllButton(int R, int G, int B) {
-  setLed(1, R, G, B);
-  setLed(2, R, G, B);
-  setLed(3, R, G, B);
-  setLed(4, R, G, B);
+  setBlock(1, R, G, B);
+  setBlock(2, R, G, B);
+  setBlock(3, R, G, B);
+  setBlock(4, R, G, B);
+}
+
+void fadeLed(int ledId, int R, int G, int B, int fadeTime) {
+  int leds[] = {0, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  int ledId = leds[ledId];
+  CRGB led = leds_buffer[ledId];
+  int fadeSteps = fadeTime / 10;
+  int fadeR = (R - led.r) / fadeSteps;
+  int fadeG = (G - led.g) / fadeSteps;
+  int fadeB = (B - led.b) / fadeSteps;
+
+  for(int i = 0; i < fadeSteps; i++) {
+    led.r += fadeR;
+    led.g += fadeG;
+    led.b += fadeB;
+    setLed(ledId, led.r, led.g, led.b);
+    delay(10);
+  }
+}
+
+void fadeAllLed(int R, int G, int B, int fadeTime) {
+  for(int i = 0; i < NUM_LEDS; i++) {
+    fadeLed(i, R, G, B, fadeTime);
+  }
 }
 
 void ledStartup() {
   setAllButton(0, 0, 0);
   delay(10);
-  setAllButton(255, 255, 255);
-  delay(250);
-  setAllButton(0, 0, 0);
+  //fade all leds in out
+  int fadeTime = 100;
+  fadeAllLed(255, 255, 255, fadeTime);
+  fadeAllLed(255, 0, 0, fadeTime);
+  fadeAllLed(0, 255, 0, fadeTime);
+  fadeAllLed(0, 0, 255, fadeTime);
+  fadeAllLed(255, 255, 255, fadeTime);
+  fadeAllLed(0, 0, 0, fadeTime);
 }
 
 void setup()
@@ -105,41 +140,41 @@ void loop()
 
   if (button1.pressed()) {
     Serial.println("Button1: got pressed");
-    setLed(1, 255, 255, 255);
+    setBlock(1, 255, 255, 255);
   }
 
   if (button2.pressed()) {
     Serial.println("Button2: got pressed");
-    setLed(2, 255, 255, 255);
+    setBlock(2, 255, 255, 255);
   }
 
   if (button3.pressed()) {
     Serial.println("Button3: got pressed");
-    setLed(3, 255, 255, 255);
+    setBlock(3, 255, 255, 255);
   }
 
 
   if (button4.pressed()) {
     Serial.println("Button4: got pressed");
-    setLed(4, 255, 255, 255);
+    setBlock(4, 255, 255, 255);
   }
 
 
 
   if(button1.released()) {
-    setLed(1, 0, 0, 0);
+    setBlock(1, 0, 0, 0);
   }
 
   if(button2.released()) {
-    setLed(2, 0, 0, 0);
+    setBlock(2, 0, 0, 0);
   }
 
   if(button3.released()) {
-    setLed(3, 0, 0, 0);
+    setBlock(3, 0, 0, 0);
   }
 
   if(button4.released()) {
-    setLed(4, 0, 0, 0);
+    setBlock(4, 0, 0, 0);
   }
 
 
