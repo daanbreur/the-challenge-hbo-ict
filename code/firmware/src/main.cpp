@@ -13,6 +13,71 @@ Bounce2::Button button2 = Bounce2::Button();
 Bounce2::Button button3 = Bounce2::Button();
 Bounce2::Button button4 = Bounce2::Button();
 
+void checkButtons() {
+  return;
+}
+
+void updateButtons() {
+  button1.update();
+  button2.update();
+  button3.update();
+  button4.update();
+}
+
+void setLed(int ledId, int R, int G, int B)
+{
+  switch (ledId)
+  {
+  case 0:
+    leds_buffer[0] = CRGB(R, G, B);
+    break;
+
+  case 1:
+    leds_buffer[1] = CRGB(R, G, B);
+    leds_buffer[2] = CRGB(R, G, B);
+    leds_buffer[3] = CRGB(R, G, B);
+    leds_buffer[4] = CRGB(R, G, B);
+    break;
+
+  case 2:
+    leds_buffer[5] = CRGB(R, G, B);
+    leds_buffer[6] = CRGB(R, G, B);
+    leds_buffer[7] = CRGB(R, G, B);
+    leds_buffer[8] = CRGB(R, G, B);
+    break;
+
+  case 3:
+    leds_buffer[9] = CRGB(R, G, B);
+    leds_buffer[10] = CRGB(R, G, B);
+    leds_buffer[11] = CRGB(R, G, B);
+    leds_buffer[12] = CRGB(R, G, B);
+    break;
+
+  case 4:
+    leds_buffer[13] = CRGB(R, G, B);
+    leds_buffer[14] = CRGB(R, G, B);
+    leds_buffer[15] = CRGB(R, G, B);
+    leds_buffer[16] = CRGB(R, G, B);
+    break;
+  }
+  FastLED.show();
+}
+
+void setAllButton(int R, int G, int B) {
+  setLed(1, R, G, B);
+  setLed(2, R, G, B);
+  setLed(3, R, G, B);
+  setLed(4, R, G, B);
+}
+
+void ledStartup() {
+  setAllButton(0, 0, 0);
+  delay(10);
+  setAllButton(255, 255, 255);
+  delay(250);
+  setAllButton(0, 0, 0);
+}
+
 void setup()
 {
   FastLED.addLeds<WS2812B, LEDS_DATA, RGB>(leds_buffer, NUM_LEDS);
@@ -78,85 +143,4 @@ void loop()
   }
 
 
-}
-
-void checkButtons() {
-
-}
-
-
-void updateButtons() {
-  button1.update();
-  button2.update();
-  button3.update();
-  button4.update();
-}
-
-enum LED_ID
-{
-  STATUS = 0,
-  A = 1,
-  B = 2,
-  C = 3,
-  D = 4
-};
-
-void ledStartup() {
-  setAllButton(0, 0, 0);
-  delay(10);
-  setAllButton(255, 255, 255);
-  delay(250);
-  setAllButton(0, 0, 0);
-}
-
-void setLed(int _ledId, int R, int G, int B)
-{
-  LED_ID ledId = static_cast<LED_ID>(_ledId);
-  setLed(ledId, R, G, B);
-}
-
-void setAllButton(int R, int G, int B) {
-    setLed(1, R, G, B);
-    setLed(2, R, G, B);
-    setLed(3, R, G, B);
-    setLed(4, R, G, B);
-}
-
-void setLed(LED_ID ledId, int R, int G, int B)
-{
-  switch (ledId)
-  {
-  case LED_ID::STATUS:
-    leds_buffer[0] = CRGB(R, G, B);
-    break;
-
-  case LED_ID::A:
-    leds_buffer[1] = CRGB(R, G, B);
-    leds_buffer[2] = CRGB(R, G, B);
-    leds_buffer[3] = CRGB(R, G, B);
-    leds_buffer[4] = CRGB(R, G, B);
-    break;
-
-  case LED_ID::B:
-    leds_buffer[5] = CRGB(R, G, B);
-    leds_buffer[6] = CRGB(R, G, B);
-    leds_buffer[7] = CRGB(R, G, B);
-    leds_buffer[8] = CRGB(R, G, B);
-    break;
-
-  case LED_ID::C:
-    leds_buffer[9] = CRGB(R, G, B);
-    leds_buffer[10] = CRGB(R, G, B);
-    leds_buffer[11] = CRGB(R, G, B);
-    leds_buffer[12] = CRGB(R, G, B);
-    break;
-
-  case LED_ID::D:
-    leds_buffer[13] = CRGB(R, G, B);
-    leds_buffer[14] = CRGB(R, G, B);
-    leds_buffer[15] = CRGB(R, G, B);
-    leds_buffer[16] = CRGB(R, G, B);
-    break;
-  }
-  FastLED.show();
 }
