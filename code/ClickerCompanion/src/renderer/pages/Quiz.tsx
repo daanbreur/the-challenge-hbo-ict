@@ -4,6 +4,7 @@ import 'tailwindcss/tailwind.css';
 import PageWrapper from '../components/PageWrapper';
 import { Props } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Quiz({ setCurrentPage }: Props) {
   return (
     <PageWrapper>

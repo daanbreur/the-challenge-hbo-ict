@@ -33,8 +33,8 @@ export default function MainMenu({ setCurrentPage }: Props) {
         >
           Settings
         </div>
-        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button3 rounded-lg ml-10 text-center cursor-pointer" />
-        <div className="flex-auto flex justify-center items-center outline-text hover:outline bg-button4 rounded-lg mr-10 text-center cursor-pointer" />
+        <div className="flex-auto flex justify-center items-center bg-button3 rounded-lg ml-10" />
+        <div className="flex-auto flex justify-center items-center bg-button4 rounded-lg mr-10" />
       </div>
       <footer className="text-center pt-5">
         ClickerCompanion by ClassClick B.V. 2023
