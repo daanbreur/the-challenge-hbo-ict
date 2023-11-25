@@ -42,7 +42,9 @@ bool setLedColor(int ledIndex, CRGB color, int fadeTime = 0, int startDelay = 0)
   return false;
 }
 
-bool setBlockColor(int blockIndex, CRGB color, int fadeTime = 0, int startDelay = 0){
+bool setBlockColor(int blockIndex, CRGB color, int fadeTime = 0, int startDelay = 0, int transferDelay = 0){
+  if((transferDelay != 0 || startDelay != 0) && fadeTime == 0) fadeTime = 1;
+
   switch (blockIndex){
   case 0:
     setLedColor(0, color, fadeTime, startDelay);
@@ -50,30 +52,30 @@ bool setBlockColor(int blockIndex, CRGB color, int fadeTime = 0, int startDelay 
 
   case 1:
     setLedColor(1, color, fadeTime, startDelay);
-    setLedColor(2, color, fadeTime, startDelay);
-    setLedColor(3, color, fadeTime, startDelay);
-    setLedColor(4, color, fadeTime, startDelay);
+    setLedColor(2, color, fadeTime, startDelay + transferDelay);
+    setLedColor(3, color, fadeTime, startDelay + transferDelay * 2);
+    setLedColor(4, color, fadeTime, startDelay + transferDelay * 3);
     break;
 
   case 2:
     setLedColor(5, color, fadeTime, startDelay);
-    setLedColor(6, color, fadeTime, startDelay);
-    setLedColor(7, color, fadeTime, startDelay);
-    setLedColor(8, color, fadeTime, startDelay);
+    setLedColor(6, color, fadeTime, startDelay + transferDelay);
+    setLedColor(7, color, fadeTime, startDelay + transferDelay * 2);
+    setLedColor(8, color, fadeTime, startDelay + transferDelay * 3);
     break;
 
   case 3:
     setLedColor(9, color, fadeTime, startDelay);
-    setLedColor(10, color, fadeTime, startDelay);
-    setLedColor(11, color, fadeTime, startDelay);
-    setLedColor(12, color, fadeTime, startDelay);
+    setLedColor(10, color, fadeTime, startDelay + transferDelay);
+    setLedColor(11, color, fadeTime, startDelay + transferDelay * 2);
+    setLedColor(12, color, fadeTime, startDelay + transferDelay * 3);
     break;
 
   case 4:
     setLedColor(13, color, fadeTime, startDelay);
-    setLedColor(14, color, fadeTime, startDelay);
-    setLedColor(15, color, fadeTime, startDelay);
-    setLedColor(16, color, fadeTime, startDelay);
+    setLedColor(14, color, fadeTime, startDelay + transferDelay);
+    setLedColor(15, color, fadeTime, startDelay + transferDelay * 2);
+    setLedColor(16, color, fadeTime, startDelay + transferDelay * 3);
     break;
   }
 
@@ -138,8 +140,8 @@ void setup(){
   button3.setPressedState(HIGH);
   button4.setPressedState(HIGH);
 
-  setLedColor(0, CRGB::Red);
-  setLedColor(0, CRGB::Green, 100, 250);
+  setLedColor(0, CRGB::OrangeRed);
+  setLedColor(0, CRGB::Black, 100, 250);
 
 }
 
@@ -182,19 +184,19 @@ void loop(){
 
 
   if(button1.released()) {
-    setBlockColor(1, CRGB::Black, 100);
+    setBlockColor(1, CRGB::Black, 100, 0, 0);
   }
 
   if(button2.released()) {
-    setBlockColor(2, CRGB::Black, 100);
+    setBlockColor(2, CRGB::Black, 100, 0, 0);
   }
 
   if(button3.released()) {
-    setBlockColor(3, CRGB::Black, 100);
+    setBlockColor(3, CRGB::Black, 100, 0, 0);
   }
 
   if(button4.released()) {
-    setBlockColor(4, CRGB::Black, 100);
+    setBlockColor(4, CRGB::Black, 100, 0, 0);
   }
 
 
