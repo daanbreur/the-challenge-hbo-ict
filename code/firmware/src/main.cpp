@@ -23,6 +23,15 @@ Bounce2::Button button4 = Bounce2::Button();
 long lastMicros = 0;
 bool setRandomColor = true;
 
+/**
+ * Sets the color of an LED at the specified index.
+ * 
+ * @param ledIndex The index of the LED.
+ * @param color The color to set the LED to.
+ * @param fadeTime The duration of the fade animation (optional, default is 0).
+ * @param startDelay The delay before starting the fade animation (optional, default is 0).
+ * @return True if the LED color was set immediately, false if a fade animation was started.
+ */
 bool setLedColor(int ledIndex, CRGB color, int fadeTime = 0, int startDelay = 0){
   if(fadeTime == 0) {
     leds_fadeStep[ledIndex] = 0;
@@ -42,66 +51,59 @@ bool setLedColor(int ledIndex, CRGB color, int fadeTime = 0, int startDelay = 0)
   return false;
 }
 
-bool setBlockColor(int blockIndex, CRGB color, int fadeTime = 0, int startDelay = 0, int transferDelay = 0){
-  if((transferDelay != 0 || startDelay != 0) && fadeTime == 0) fadeTime = 1;
+/**
+ * Sets the color of a block of LEDs.
+ *
+ * @param blockIndex The index of the block to set the color for.
+ * @param color The color to set the LEDs to.
+ * @param fadeTime The duration of the fade effect (optional, default is 0).
+ * @param startDelay The delay before starting the fade effect (optional, default is 0).
+ * @param transferDelay The delay between each LED in the block (optional, default is 0).
+ * @return Returns false.
+ */
+bool setBlockColor(int blockIndex, CRGB color, int fadeTime = 0, int startDelay = 0, int transferDelay = 0) {
+  if ((transferDelay || startDelay) && !fadeTime) fadeTime = 1;
 
-  switch (blockIndex){
-  case 0:
-    setLedColor(0, color, fadeTime, startDelay);
-    break;
+  auto setBlockLeds = [&](int startLed, int numLeds) {
+    for (int i = 0; i < numLeds; ++i) {
+      setLedColor(startLed + i, color, fadeTime, startDelay + transferDelay * i);
+    }
+  };
 
-  case 1:
-    setLedColor(1, color, fadeTime, startDelay);
-    setLedColor(2, color, fadeTime, startDelay + transferDelay);
-    setLedColor(3, color, fadeTime, startDelay + transferDelay * 2);
-    setLedColor(4, color, fadeTime, startDelay + transferDelay * 3);
-    break;
-
-  case 2:
-    setLedColor(5, color, fadeTime, startDelay);
-    setLedColor(6, color, fadeTime, startDelay + transferDelay);
-    setLedColor(7, color, fadeTime, startDelay + transferDelay * 2);
-    setLedColor(8, color, fadeTime, startDelay + transferDelay * 3);
-    break;
-
-  case 3:
-    setLedColor(9, color, fadeTime, startDelay);
-    setLedColor(10, color, fadeTime, startDelay + transferDelay);
-    setLedColor(11, color, fadeTime, startDelay + transferDelay * 2);
-    setLedColor(12, color, fadeTime, startDelay + transferDelay * 3);
-    break;
-
-  case 4:
-    setLedColor(13, color, fadeTime, startDelay);
-    setLedColor(14, color, fadeTime, startDelay + transferDelay);
-    setLedColor(15, color, fadeTime, startDelay + transferDelay * 2);
-    setLedColor(16, color, fadeTime, startDelay + transferDelay * 3);
-    break;
+  switch (blockIndex) {
+    case 0: setLedColor(0, color, fadeTime, startDelay); break;
+    case 1: setBlockLeds(1, 4); break;
+    case 2: setBlockLeds(5, 4); break;
+    case 3: setBlockLeds(9, 4); break;
+    case 4: setBlockLeds(13, 4); break;
   }
 
   return false;
 }
 
+/**
+ * Generates a random color using the CRGB library.
+ * 
+ * @return A random CRGB color.
+ */
 CRGB randomColor(){
   randomSeed(ESP.getCycleCount());
   return CRGB(random(0, 255), random(0, 255), random(0, 255));
 }
 
-void handleLedFadeStep(){
-  for(int i = 0; i < NUM_LEDS; i++){
-    if(leds_fadeTime[i] > 0 && leds_fadeStep[i] < (leds_fadeTime[i] + 1)){
-      if(leds_fadeDelay[i] > 0){
+void handleLedFadeStep() {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    if (leds_fadeTime[i] > 0 && leds_fadeStep[i] < (leds_fadeTime[i] + 1)) {
+      if (leds_fadeDelay[i] > 0) {
         leds_fadeDelay[i]--;
       } else {
         leds_buffer[i] = leds_start[i].lerp8(leds_target[i], leds_fadeStep[i] * 255 / leds_fadeTime[i]);
-        leds_fadeStep[i]++;
+        if (++leds_fadeStep[i] > leds_fadeTime[i]) {
+          leds_fadeTime[i] = 0;
+          leds_fadeStep[i] = 0;
+          leds_fadeDelay[i] = 0;
+        }
       }
-    }
-
-    if(leds_fadeStep[i] == (leds_fadeTime[i] + 1)){
-      leds_fadeTime[i] = 0;
-      leds_fadeStep[i] = 0;
-      leds_fadeDelay[i] = 0;
     }
   }
 }
@@ -113,10 +115,14 @@ void updateButtons() {
   button4.update();
 }
 
-int microsSinceLastRun(){
+/**
+ * Calculates the time elapsed in microseconds since the last run of the function.
+ * 
+ * @return The time elapsed in microseconds.
+ */
+int microsSinceLastRun() {
   long currentNano = micros();
-  int diff = currentNano - lastMicros;
-  if(diff < 0) diff = (4294967295 - lastMicros) + currentNano;
+  int diff = (currentNano - lastMicros + 4294967295) % 4294967296;
   lastMicros = currentNano;
   return diff;
 }
