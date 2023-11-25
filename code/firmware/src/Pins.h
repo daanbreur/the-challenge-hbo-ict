@@ -6,3 +6,5 @@
 #define CHARGE	 14
 #define STANDBY  16
 // #define BATTERY 2
+
+#define NUM_LEDS 17
