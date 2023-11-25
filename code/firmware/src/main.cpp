@@ -78,7 +78,6 @@ void setAllButton(int R, int G, int B) {
 
 void fadeLed(int ledId, int R, int G, int B, int fadeTime) {
   int leds[] = {0, 13, 14, 15, 16, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-  int ledId = leds[ledId];
   CRGB led = leds_buffer[ledId];
   int fadeSteps = fadeTime / 10;
   int fadeR = (R - led.r) / fadeSteps;
