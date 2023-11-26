@@ -15,6 +15,7 @@ import log from 'electron-log';
 import sqlite from 'sqlite3';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { DatabaseQuery } from '../renderer/types';
 
 class AppUpdater {
   constructor() {
@@ -55,8 +56,32 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on('database-communication', async (event, data) => {
-  event.reply('database-communication', null);
+ipcMain.on('database-communication', async (event, data: DatabaseQuery) => {
+  switch (data.requestFor) {
+    case 'quizzes':
+      db.all('SELECT * FROM quizes q;', (err: any, rows: any) => {
+        console.log(rows);
+        event.reply('database-communication:quizzes', rows);
+      });
+      break;
+
+    case 'questions':
+      db.all(
+        'SELECT * FROM questions q WHERE quiz_id = $id',
+        {
+          $id: data.quizId,
+        },
+        (err: any, rows: any) => {
+          console.log(rows);
+          event.reply('database-communication:questions', rows);
+        },
+      );
+      break;
+
+    default:
+      event.reply('database-communication', null);
+      break;
+  }
 });
 
 if (process.env.NODE_ENV === 'production') {
