@@ -13,15 +13,15 @@ import 'tailwindcss/tailwind.css';
 export default function MainMenu({ setCurrentPage }: Props) {
   return (
     <PageWrapper>
-      <div className="h-[40vh] flex justify-center items-center py-5">
-        <img draggable={false} className="h-full" alt="icon" src={logo} />
+      <div className="flex justify-center items-center py-5">
+        <img draggable={false} className="h-[300px] min-h-[300px]" alt="icon" src={logo} />
       </div>
-      <div className="h-[50vh] grid grid-cols-2 gap-4 text-black_text font-bold text-3xl">
+      <div className="grid grid-cols-2 gap-10 font-bold text-3xl">
         <div
           onClick={() => {
             setCurrentPage('quiz-selection');
           }}
-          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button1 rounded-lg ml-10 text-center cursor-pointer"
+          className=" flex justify-center items-center outline-text hover:outline bg-cc_blue rounded-lg text-center cursor-pointer"
         >
           Start
         </div>
@@ -29,7 +29,7 @@ export default function MainMenu({ setCurrentPage }: Props) {
           onClick={() => {
             setCurrentPage('settings');
           }}
-          className="flex-auto flex justify-center items-center outline-text hover:outline bg-button2 rounded-lg mr-10 text-center cursor-pointer"
+          className="flex justify-center items-center outline-text hover:outline bg-button3 rounded-lg text-center cursor-pointer"
         >
           Settings
         </div>
