@@ -33,7 +33,6 @@ module.exports = {
       button2: 'var(--button2)',
       button3: 'var(--button3)',
       button4: 'var(--button4)',
-      cc_blue: 'var(--cc-blue)',
     },
     extend: {},
   },
