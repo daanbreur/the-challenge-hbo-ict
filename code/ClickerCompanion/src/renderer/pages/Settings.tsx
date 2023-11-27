@@ -5,19 +5,26 @@ import '../globals.css';
 import '../fonts.css';
 import 'tailwindcss/tailwind.css';
 import PageWrapper from '../components/PageWrapper';
-import { Props } from '../types';
+import { ISettings, Props } from '../types';
 import Setting from '../components/Setting';
 import SettingsGroup from '../components/SettingsGroup';
 
-export default function Settings({ setCurrentPage }: Props) {
+export default function Settings({
+  setCurrentPage,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setSettings,
+}: Props & {
+  setSettings: React.Dispatch<React.SetStateAction<ISettings>>;
+}) {
   return (
     <PageWrapper>
       <div className="flex justify-between mb-2">
         <div
           onClick={() => {
-            setCurrentPage('mainmenu');
+            setCurrentPage('overview');
           }}
-          className="flex grow-0 shrink-0 px-8 text-xl cursor-pointer bg-cc_blue justify-center items-center rounded-lg my-2 ml-4 hover:outline font-bold">
+          className="flex grow-0 shrink-0 px-8 text-xl cursor-pointer bg-cc_blue justify-center items-center rounded-lg my-2 ml-4 hover:outline font-bold"
+        >
           Menu
         </div>
         <div className="text-center text-3xl">
