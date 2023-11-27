@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 // eslint-disable-next-line import/no-cycle
 import App from './App';
-import { DatabaseQuery, Question, Quiz } from './types';
+import { IDatabaseQuery, IQuestion, IQuiz } from './types';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -14,34 +14,34 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
 });
 window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
 
-export async function getQuizzes(): Promise<Quiz[]> {
+export async function getQuizzes(): Promise<IQuiz[]> {
   return new Promise((resolve) => {
     window.electron.ipcRenderer.once(
       'database-communication:quizzes',
       (arg) => {
-        const data: Quiz[] = arg as Quiz[];
+        const data: IQuiz[] = arg as IQuiz[];
         resolve(data);
       },
     );
     window.electron.ipcRenderer.sendMessage('database-communication', {
       requestFor: 'quizzes',
-    } as DatabaseQuery);
+    } as IDatabaseQuery);
   });
 }
 
-export async function getQuizQuestions(quizId: Number): Promise<Question[]> {
+export async function getQuizQuestions(quizId: Number): Promise<IQuestion[]> {
   return new Promise((resolve) => {
     window.electron.ipcRenderer.once(
       'database-communication:questions',
       (arg) => {
-        const data: Question[] = arg as Question[];
+        const data: IQuestion[] = arg as IQuestion[];
         resolve(data);
       },
     );
     window.electron.ipcRenderer.sendMessage('database-communication', {
       requestFor: 'questions',
       quizId,
-    } as DatabaseQuery);
+    } as IDatabaseQuery);
   });
 }
 
