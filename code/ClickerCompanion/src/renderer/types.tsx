@@ -1,23 +1,33 @@
 import React from 'react';
 
-export type IPageNames = 'mainmenu' | 'quiz-selection' | 'devices' | 'settings';
+export type IPageNames = 'overview' | 'quiz-selection' | 'devices' | 'settings';
 
-export type Props = {
-  setCurrentPage: React.Dispatch<React.SetStateAction<IPageNames>>;
-};
-
-export type DatabaseQuery =
+export type IDatabaseQuery =
   | {
+      type: 'request';
       requestFor: 'quizzes';
     }
   | {
+      type: 'request';
+      requestFor: 'quiz';
+      quizId: Number;
+    }
+  | {
+      type: 'request';
       requestFor: 'questions';
       quizId: Number;
+    }
+  | {
+      type: 'request';
+      requestFor: 'question';
+      questionId: Number;
     };
 
-export interface Device {} // TODO: fix this as well
+export interface ISettings {}
 
-export interface Answer {
+export interface IDevice {} // TODO: fix this as well
+
+export interface IAnswer {
   id: Number | null;
   device_id: Number;
   question_id: Number;
@@ -26,7 +36,7 @@ export interface Answer {
   answer: string; // TODO: make better fucking name for this
 }
 
-export interface Question {
+export interface IQuestion {
   id: Number | null;
   quiz_id: Number;
   answer_1: string;
@@ -39,7 +49,7 @@ export interface Question {
   answer_4_valid: boolean;
 }
 
-export interface Quiz {
+export interface IQuiz {
   id: Number | null;
   title: string;
   description: string;
@@ -47,8 +57,15 @@ export interface Quiz {
   updated_at: Date;
 }
 
-export interface Room {
+export interface IRoom {
   id: Number | null;
   quiz_id: Number;
   started: Date;
 }
+
+export type Props = {
+  setCurrentPage: React.Dispatch<React.SetStateAction<IPageNames>>;
+  setSelectedQuiz: React.Dispatch<React.SetStateAction<IQuiz>>;
+  selectedQuiz: IQuiz;
+  settings: ISettings;
+};

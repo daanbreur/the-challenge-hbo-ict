@@ -15,7 +15,7 @@ import log from 'electron-log';
 import sqlite from 'sqlite3';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { DatabaseQuery } from '../renderer/types';
+import { IDatabaseQuery } from '../renderer/types';
 
 class AppUpdater {
   constructor() {
@@ -56,7 +56,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on('database-communication', async (event, data: DatabaseQuery) => {
+ipcMain.on('database-communication', async (event, data: IDatabaseQuery) => {
   switch (data.requestFor) {
     case 'quizzes':
       db.all('SELECT * FROM quizzes q;', (err: any, rows: any) => {
