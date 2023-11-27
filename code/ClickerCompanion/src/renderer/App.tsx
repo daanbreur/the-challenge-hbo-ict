@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Quiz from './pages/Quiz';
-import MainMenu from './pages/MainMenu';
+// eslint-disable-next-line import/no-cycle
+import Overview from './pages/Overview';
 import Devices from './pages/Devices';
 import Settings from './pages/Settings';
 
@@ -47,7 +48,14 @@ function Renderer() {
       />
     );
 
-  return <MainMenu setCurrentPage={setCurrentPage} />;
+  return (
+    <Overview
+      setCurrentPage={setCurrentPage}
+      setSelectedQuiz={setSelectedQuiz}
+      selectedQuiz={selectedQuiz}
+      settings={settings}
+    />
+  );
 }
 
 export default function App() {
