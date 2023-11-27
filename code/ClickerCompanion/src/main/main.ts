@@ -32,10 +32,10 @@ const db = new sqlite3.Database(
 
 db.serialize(() => {
   db.run(
-    'CREATE TABLE IF NOT EXISTS `quizes` (`id` integer PRIMARY KEY,`title` varchar(255),`description` varchar(255),`created_at` timestamp,`updated_at` timestamp)',
+    'CREATE TABLE IF NOT EXISTS `quizzes` (`id` integer PRIMARY KEY,`title` varchar(255),`description` varchar(255),`created_at` timestamp,`updated_at` timestamp)',
   );
   db.run(
-    'CREATE TABLE IF NOT EXISTS `questions` (`id` integer PRIMARY KEY,`quiz_id` integer,`answer_1` varchar(255),`answer_2` varchar(255),`answer_3` varchar(255),`answer_4` varchar(255),`answer_1_valid` bool,`answer_2_valid` bool,`answer_3_valid` bool,`answer_4_valid` bool,FOREIGN KEY (`quiz_id`) REFERENCES `quizes` (`id`))',
+    'CREATE TABLE IF NOT EXISTS `questions` (`id` integer PRIMARY KEY,`quiz_id` integer,`answer_1` varchar(255),`answer_2` varchar(255),`answer_3` varchar(255),`answer_4` varchar(255),`answer_1_valid` bool,`answer_2_valid` bool,`answer_3_valid` bool,`answer_4_valid` bool,FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`))',
   );
   db.run(
     'CREATE TABLE IF NOT EXISTS `answers` (`id` integer PRIMARY KEY,`device_id` integer,`question_id` integer,`room_id` integer,`timestamp` timestamp,`answer` varchar(255),FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`),FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`),FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`))',
@@ -44,7 +44,7 @@ db.serialize(() => {
     'CREATE TABLE IF NOT EXISTS `devices` (`id` integer PRIMARY KEY,`username` varchar(255))',
   );
   db.run(
-    'CREATE TABLE IF NOT EXISTS `rooms` (`id` integer PRIMARY KEY,`quiz_id` integer,`started` timestamp,FOREIGN KEY (`quiz_id`) REFERENCES `quizes` (`id`))',
+    'CREATE TABLE IF NOT EXISTS `rooms` (`id` integer PRIMARY KEY,`quiz_id` integer,`started` timestamp,FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`))',
   );
 });
 
@@ -59,8 +59,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 ipcMain.on('database-communication', async (event, data: DatabaseQuery) => {
   switch (data.requestFor) {
     case 'quizzes':
-      db.all('SELECT * FROM quizes q;', (err: any, rows: any) => {
-        console.log(rows);
+      db.all('SELECT * FROM quizzes q;', (err: any, rows: any) => {
         event.reply('database-communication:quizzes', rows);
       });
       break;
@@ -72,7 +71,6 @@ ipcMain.on('database-communication', async (event, data: DatabaseQuery) => {
           $id: data.quizId,
         },
         (err: any, rows: any) => {
-          console.log(rows);
           event.reply('database-communication:questions', rows);
         },
       );
