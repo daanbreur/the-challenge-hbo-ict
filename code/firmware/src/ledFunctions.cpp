@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "Pins.h"
+#include "Globals.h"
 #include "FastLED.h"
 
 CRGB leds_buffer[NUM_LEDS];

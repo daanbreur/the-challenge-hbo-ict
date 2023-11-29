@@ -1,10 +1,13 @@
 #include "Arduino.h"
 #include "Pins.h"
+#include "Globals.h"
 #include "Bounce2.h"
 #include "ledFunctions.h"
 
 #include <espnow.h>
 #include <ESP8266WiFi.h>
+
+const uint8_t BROADCAST_MAC[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 Bounce2::Button buttons[4] = {Bounce2::Button(), Bounce2::Button(), Bounce2::Button(), Bounce2::Button()};
 
@@ -77,8 +80,14 @@ void setup(){
   // Serial.println(getTransitionStackLength());
   // Serial.println("heyy");
   // Serial.println(getTransitionStackLength());
-    Serial.println("Device MAC: " + WiFi.macAddress());
+  Serial.println("Device MAC: " + WiFi.macAddress());
 
+  WiFi.mode(WIFI_STA);
+
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
 }
 
 void loop(){
