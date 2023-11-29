@@ -3,10 +3,29 @@
 #include "Bounce2.h"
 #include "ledFunctions.h"
 
+#include <espnow.h>
+#include <ESP8266WiFi.h>
+
 Bounce2::Button buttons[4] = {Bounce2::Button(), Bounce2::Button(), Bounce2::Button(), Bounce2::Button()};
 
 long lastMicros = 0;
+long lastStatusUpdate = 0;
 bool setRandomColor = true;
+
+bool usbPowerConnected() {
+  return digitalRead(CHARGE) == LOW || digitalRead(STANDBY) == LOW;
+}
+bool isCharging() {
+  return digitalRead(CHARGE) == LOW;
+}
+float batteryVoltage() {
+  float voltage = analogRead(BATTERY);
+  return (voltage * 0.00416918) + 0.0;
+}
+bool powerSwitchOn() {
+  return batteryVoltage() < 1;
+}
+
 
 void updateButtons() {
   for(int i = 0; i < 4; i++) {
@@ -45,19 +64,20 @@ void setup(){
     buttons[i].setPressedState(HIGH);
   }
 
-    for(int i = 0; i < 5; i++) {
-      addBlockTransitionToStack(i, CRGB::Red, 25, i * 5, 5);
-      addBlockTransitionToStack(i, CRGB::Orange, 25, 0, 5);
-      addBlockTransitionToStack(i, CRGB::Yellow, 25, 0, 5);
-      addBlockTransitionToStack(i, CRGB::Green, 25, 0, 5);
-      addBlockTransitionToStack(i, CRGB::Blue, 25, 0, 5);
-      addBlockTransitionToStack(i, CRGB::Indigo, 25, 0, 5);
-      addBlockTransitionToStack(i, CRGB::Black, 25, 0, 5);
-    }
+  for(int i = 0; i < 5; i++) {
+    addBlockTransitionToStack(i, CRGB::Red, 25, i * 5, 5);
+    addBlockTransitionToStack(i, CRGB::Orange, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Yellow, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Green, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Blue, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Indigo, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Black, 25, 0, 5);
+  }
 
-  Serial.println(getTransitionStackLength());
-  Serial.println("heyy");
-  Serial.println(getTransitionStackLength());
+  // Serial.println(getTransitionStackLength());
+  // Serial.println("heyy");
+  // Serial.println(getTransitionStackLength());
+    Serial.println("Device MAC: " + WiFi.macAddress());
 
 }
 
@@ -73,8 +93,42 @@ void loop(){
     }
   }
 
+  if(usbPowerConnected() == true && isCharging() == false) {
+    setBlockColor(0, CRGB::Green);
+  }
+
+  if(millis() - lastStatusUpdate > 1000) {
+    Serial.print("Battery: ");
+    Serial.print(batteryVoltage());
+    Serial.print(" | Charge: ");
+    Serial.print(isCharging());
+    Serial.print(" | 1: ");
+        Serial.print(digitalRead(CHANGE));
+    Serial.print(" | 2: ");
+        Serial.print(digitalRead(STANDBY));
+    Serial.print(" | USB: ");
+    Serial.println(usbPowerConnected());
+
+    if(usbPowerConnected() == true && isCharging() == false) {
+      Serial.println("USB Power Connected");
+      addLedTransitionToStack(0, CRGB(0, 10, 0), 100, 0);
+      addLedTransitionToStack(0, CRGB::Black, 100, 0);
+    } else if (usbPowerConnected() == true && isCharging() == true) {
+      Serial.println("Charging");
+      addLedTransitionToStack(0, CRGB(10, 0, 0), 100, 0);
+      addLedTransitionToStack(0, CRGB::Black, 100, 0);
+    } else if (usbPowerConnected() == false) {
+      Serial.println("USB Power Disconnected");
+      setLedColor(0, CRGB(0, 10, 0), 100, 0);
+    }
+
+    lastStatusUpdate = millis();
+  }
+
   handleTransitionStack();
   handleLedFadeStep();
   FastLED.show();
-  if(microsSinceLastRun() < 10000) delayMicroseconds(10000 - microsSinceLastRun());
+
+  int microsSinceLast = microsSinceLastRun();
+  if(microsSinceLast < 1000) delayMicroseconds(1000 - microsSinceLast);
 }
