@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],
-  darkMode: 'media', // or 'media' or 'class'
   theme: {
     fontSize: {
       sm: '0.750rem',
@@ -34,7 +33,6 @@ module.exports = {
       button2: 'var(--button2)',
       button3: 'var(--button3)',
       button4: 'var(--button4)',
-      cc_blue: 'var(--cc-blue)',
     },
     extend: {},
   },
