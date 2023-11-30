@@ -7,7 +7,20 @@
 #include <espnow.h>
 #include <ESP8266WiFi.h>
 
-const uint8_t BROADCAST_MAC[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+uint8_t broadcastAddress[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+typedef struct struct_message {
+  char a[32];
+  int b;
+  float c;
+  String d;
+  bool e;
+} struct_message;
+struct_message myData;
+
+void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(sendStatus == 1 ? "Delivery Success" : "Delivery Fail");
+}
 
 Bounce2::Button buttons[4] = {Bounce2::Button(), Bounce2::Button(), Bounce2::Button(), Bounce2::Button()};
 
@@ -84,9 +97,19 @@ void setup(){
 
   WiFi.mode(WIFI_STA);
 
-  if (esp_now_init() != ESP_OK) {
+  if (esp_now_init() != 0) {
     Serial.println("Error initializing ESP-NOW");
     return;
+  }
+
+  esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
+  esp_now_register_send_cb(OnDataSent);
+
+  if (esp_now_add_peer(broadcastAddress, ESP_NOW_ROLE_COMBO, 1, NULL, 0)){ 
+    Serial.println("Failed to add peer");
+    return;
+  } else {
+    Serial.println("Added peer?");
   }
 }
 
