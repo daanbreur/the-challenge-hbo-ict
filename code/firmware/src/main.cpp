@@ -72,6 +72,41 @@ int microsSinceLastRun() {
   return diff;
 }
 
+void redStrobe() {
+  for(int i = 0; i < 4; i++) {
+    setBlockColor(i + 1, CRGB::Red);
+  }
+  FastLED.show();
+  delay(100);
+  for(int i = 0; i < 4; i++) {
+    setBlockColor(i + 1, CRGB::Black);
+  }
+  FastLED.show();
+  delay(100);
+
+  for(int i = 0; i < 4; i++) {
+    setBlockColor(i + 1, CRGB::Red);
+  }
+  FastLED.show();
+  delay(100);
+  for(int i = 0; i < 4; i++) {
+    setBlockColor(i + 1, CRGB::Black);
+  }
+  FastLED.show();
+  delay(100);
+
+  for(int i = 0; i < 4; i++) {
+    setBlockColor(i + 1, CRGB::Red);
+  }
+  FastLED.show();
+  delay(100);
+  for(int i = 0; i < 4; i++) {
+    setBlockColor(i + 1, CRGB::Black);
+  }
+  FastLED.show();
+  delay(100);
+}
+
 void dataSent (uint8_t* address, uint8_t status) {
     Serial.printf ("Message sent to " MACSTR ", status: %d\n", MAC2STR (address), status);
     delay(1);
@@ -138,7 +173,7 @@ void setup(){
     addBlockTransitionToStack(i, CRGB::Indigo, 25, 0, 5);
     addBlockTransitionToStack(i, CRGB::Black, 25, 0, 5);
   }
-
+  
   // Serial.println(getTransitionStackLength());
   // Serial.println("heyy");
   // Serial.println(getTransitionStackLength());
@@ -194,7 +229,7 @@ void loop(){
     // statusMessage.usbPowerConnected = usbPowerConnected();
     // String message = String(statusMessage.messageType) + "," + String(statusMessage.deviceId) + "," + String(statusMessage.batteryVolt) + "," + String(statusMessage.isCharging) + "," + String(statusMessage.usbPowerConnected);
     // quickEspNow.send (ESPNOW_BROADCAST_ADDRESS , (uint8_t*)message.c_str (), message.length ());
-
+    redStrobe();
     lastStatusUpdate = millis();
   }
 
