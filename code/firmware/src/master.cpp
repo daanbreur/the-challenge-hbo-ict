@@ -93,7 +93,6 @@ bool addPeer(uint8_t *peer_addr)
   }
 }
 
-// callback when data is sent
 void OnDataSent(uint8_t *mac_addr, uint8_t status)
 {
   D_print("\r\nLast Packet Send Status: ");
