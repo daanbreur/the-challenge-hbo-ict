@@ -2,6 +2,7 @@
 #include <espnow.h>
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
+#include <Debug.h>
 
 #define BOARD_ID 1
 #define MAX_CHANNEL 13
@@ -81,11 +82,10 @@ float readDHTHumidity()
 
 void addPeer(uint8_t *mac_addr, uint8_t chan)
 {
-  // ESP_ERROR_CHECK(esp_wifi_set_channel(chan, WIFI_SECOND_CHAN_NONE)); // TODO: wtf is this
   esp_now_del_peer(mac_addr);
   if (esp_now_add_peer(mac_addr, ESP_NOW_ROLE_COMBO, chan, NULL, 0) != 0)
   {
-    Serial.println("Failed to add peer");
+    D_println("Failed to add peer");
     return;
   }
   memcpy(serverAddress, mac_addr, sizeof(uint8_t[6]));
@@ -96,22 +96,24 @@ void printMAC(const uint8_t *mac_addr)
   char macStr[18];
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.print(macStr);
+  D_print(macStr);
 }
 
 void OnDataSent(uint8_t *mac_addr, uint8_t status)
 {
-  Serial.print("\r\nLast Packet Send Status:");
-  Serial.println(status == 0 ? "Delivery Success" : "Delivery Fail");
+  D_print("\r\nLast Packet Send Status: ");
+  D_print(status == 0 ? "Delivery Success to " : "Delivery Fail to ");
+  printMAC(mac_addr);
+  D_println();
 }
 
 void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
 {
-  Serial.print("Packet received from: ");
+  D_print("Packet received from: ");
   printMAC(mac_addr);
-  Serial.println();
-  Serial.print("data size = ");
-  Serial.println(sizeof(incomingData));
+  D_println();
+  D_print("data size = ");
+  D_println(sizeof(incomingData));
   uint8_t type = incomingData[0];
   switch (type)
   {
@@ -208,13 +210,13 @@ void initESP_NOW()
 void setup()
 {
   Serial.begin(115200);
-  Serial.println();
+  D_println();
 
   EEPROM.begin(sizeof(settings));
   EEPROM.get(0, settings);
 
-  Serial.print("MAC Address:  ");
-  Serial.println(WiFi.macAddress());
+  D_print("MAC Address:  ");
+  D_println(WiFi.macAddress());
   WiFi.mode(WIFI_STA);
   start = millis();
 
