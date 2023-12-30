@@ -1,17 +1,17 @@
 #include <Arduino.h>
-#include <espnow.h>
 #include <ESP8266WiFi.h>
+#include <espnow.h>
+#include <ArduinoJson.h>
 #include <EEPROM.h>
 #include <Debug.h>
 
-#define BOARD_ID 1
 #define MAX_CHANNEL 13
 
 uint8_t serverAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 struct
 {
-  int deviceId = 1;
+  uint8_t deviceId = 1;
 } settings;
 
 typedef struct struct_message
@@ -51,9 +51,6 @@ enum MessageType
 };
 MessageType messageType;
 
-#ifdef SAVE_CHANNEL
-int lastChannel;
-#endif
 int channel = 1;
 
 // simulate temperature and humidity data
@@ -119,14 +116,14 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
   {
   case DATA: // we received data from server
     memcpy(&inData, incomingData, sizeof(inData));
-    Serial.print("ID  = ");
-    Serial.println(inData.id);
-    Serial.print("Setpoint temp = ");
-    Serial.println(inData.temp);
-    Serial.print("SetPoint humidity = ");
-    Serial.println(inData.hum);
-    Serial.print("reading Id  = ");
-    Serial.println(inData.readingId);
+    D_print("ID  = ");
+    D_println(inData.id);
+    D_print("Setpoint temp = ");
+    D_println(inData.temp);
+    D_print("SetPoint humidity = ");
+    D_println(inData.hum);
+    D_print("reading Id  = ");
+    D_println(inData.readingId);
 
     break;
 
@@ -135,13 +132,13 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     if (pairingData.id == 0)
     { // the message comes from server
       printMAC(mac_addr);
-      Serial.print("Pairing done for ");
+      D_print("Pairing done for ");
       printMAC(pairingData.macAddr);
-      Serial.print(" on channel ");
-      Serial.print(pairingData.channel); // channel used by the server
-      Serial.print(" in ");
-      Serial.print(millis() - start);
-      Serial.println("ms");
+      D_print(" on channel ");
+      D_print(pairingData.channel); // channel used by the server
+      D_print(" in ");
+      D_print(millis() - start);
+      D_println("ms");
       addPeer(pairingData.macAddr, pairingData.channel); // add the server  to the peer list
       pairingStatus = PAIR_PAIRED;                       // set the pairing status
     }
@@ -154,15 +151,13 @@ PairingStatus autoPairing()
   switch (pairingStatus)
   {
   case PAIR_REQUEST:
-    Serial.print("Pairing request on channel ");
-    Serial.println(channel);
+    D_print("Pairing request on channel ");
+    D_println(channel);
 
-    // set pairing data to send to the server
     pairingData.msgType = PAIRING;
-    pairingData.id = BOARD_ID;
+    pairingData.id = settings.deviceId;
     pairingData.channel = channel;
 
-    // add peer and send request
     addPeer(serverAddress, channel);
     esp_now_send(serverAddress, (uint8_t *)&pairingData, sizeof(pairingData));
     previousMillis = millis();
@@ -186,7 +181,6 @@ PairingStatus autoPairing()
     break;
 
   case PAIR_PAIRED:
-    // nothing to do here
     break;
   }
   return pairingStatus;
@@ -194,14 +188,11 @@ PairingStatus autoPairing()
 
 void initESP_NOW()
 {
-  // set WiFi channel
-  // ESP_ERROR_CHECK(esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE));
   if (esp_now_init() != 0)
   {
-    Serial.println("Error initializing ESP-NOW");
+    D_println("Error initializing ESP-NOW");
   }
 
-  // set callback routines
   esp_now_set_self_role(ESP_NOW_ROLE_COMBO);
   esp_now_register_send_cb(OnDataSent);
   esp_now_register_recv_cb(OnDataRecv);
@@ -236,11 +227,36 @@ void loop()
       previousMillis = currentMillis;
       // Set values to send
       myData.msgType = DATA;
-      myData.id = BOARD_ID;
+      myData.id = settings.deviceId;
       myData.temp = readDHTTemperature();
       myData.hum = readDHTHumidity();
       myData.readingId = readingId++;
       esp_now_send(serverAddress, (uint8_t *)&myData, sizeof(myData));
+    }
+  }
+
+  if (Serial.available())
+  {
+    StaticJsonDocument<128> doc;
+    DeserializationError err = deserializeJson(doc, Serial);
+
+    if (err == DeserializationError::Ok)
+    {
+      if (doc["type"] == "set_id")
+      {
+        uint8_t id = doc["data"]["id"];
+        settings.deviceId = id;
+
+        EEPROM.put(0, settings);
+        EEPROM.commit();
+      }
+    }
+    else
+    {
+      D_print("deserializeJson() returned ");
+      D_println(err.c_str());
+      while (Serial.available() > 0)
+        Serial.read();
     }
   }
 }

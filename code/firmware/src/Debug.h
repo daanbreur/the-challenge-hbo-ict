@@ -1,4 +1,6 @@
+#ifndef DEBUG
 #define DEBUG 0
+#endif
 
 #if DEBUG
 #define D_SerialBegin(...) Serial.begin(__VA_ARGS__);
