@@ -5,9 +5,16 @@
 #include <EEPROM.h>
 #include <Debug.h>
 
+#include <Bounce2.h>
+#include <ledFunctions.h>
+#include <Pins.h>
+#include <clickerUtils.h>
+
 #define MAX_CHANNEL 13
 
 uint8_t serverAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+Bounce2::Button buttons[] = {Bounce2::Button(), Bounce2::Button(), Bounce2::Button(), Bounce2::Button()};
 
 struct
 {
@@ -203,8 +210,43 @@ void setup()
   Serial.begin(115200);
   D_println();
 
+  // Load settings from EEPROM
+
   EEPROM.begin(sizeof(settings));
   EEPROM.get(0, settings);
+
+  // Setup pinmodes and buttons
+
+  pinMode(CHARGE, INPUT);
+  pinMode(STANDBY, INPUT);
+  pinMode(BATTERY, INPUT);
+
+  buttons[0].attach(BUTTON_1, INPUT);
+  buttons[1].attach(BUTTON_2, INPUT);
+  buttons[2].attach(BUTTON_3, INPUT);
+  buttons[3].attach(BUTTON_4, INPUT);
+
+  for (int i = 0; i < 4; i++)
+  {
+    buttons[i].interval(25);
+    buttons[i].setPressedState(HIGH);
+  }
+
+  // Setup leds and play startup animation
+
+  setupLeds();
+  for (int i = 0; i < 5; i++)
+  {
+    addBlockTransitionToStack(i, CRGB::Red, 25, i * 5, 5);
+    addBlockTransitionToStack(i, CRGB::Orange, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Yellow, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Green, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Blue, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Indigo, 25, 0, 5);
+    addBlockTransitionToStack(i, CRGB::Black, 25, 0, 5);
+  }
+
+  // Startup networking and begin pairing process
 
   D_print("MAC Address:  ");
   D_println(WiFi.macAddress());
@@ -218,6 +260,23 @@ void setup()
 
 void loop()
 {
+  for (int i = 0; i < 4; i++)
+  {
+    buttons[i].update();
+  }
+
+  for (int i = 0; i < 4; i++)
+  {
+    if (buttons[i].pressed())
+    {
+      setBlockColor(i + 1, randomColor());
+    }
+    else if (buttons[i].released())
+    {
+      setBlockColor(i + 1, CRGB::Black, 100, 0, 0);
+    }
+  }
+
   if (autoPairing() == PAIR_PAIRED)
   {
     unsigned long currentMillis = millis();
@@ -259,4 +318,10 @@ void loop()
         Serial.read();
     }
   }
+
+  handleTransitionStack();
+  handleLedFadeStep();
+  FastLED.show();
+
+  // TODO: implement RTOS on this fucker
 }
