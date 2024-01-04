@@ -122,17 +122,16 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     if (pairingData.id != 0)
       return;
 
-    printMAC(mac_addr);
     D_print("Pairing done for ");
-    printMAC(pairingData.macAddr);
+    printMAC(mac_addr);
     D_print(" on channel ");
     D_print(pairingData.channel); // channel used by the server
     D_print(" in ");
     D_print(millis() - start);
     D_println("ms");
-    addPeer(pairingData.macAddr, pairingData.channel); // add the server  to the peer list
-    pairingStatus = PAIR_PAIRED;                       // set the pairing status
-
+    esp_now_del_peer(serverAddress);
+    addPeer(mac_addr, pairingData.channel); // add the server  to the peer list
+    pairingStatus = PAIR_PAIRED;            // set the pairing status
     break;
   }
 }
@@ -269,7 +268,7 @@ void loop()
         answerData.timeToAnswer = timeToAnswer;
         answerData.answer = (uint8_t)(i + 1);
 
-        esp_now_send(serverAddress, (uint8_t *)&answerData, sizeof(answerData));
+        esp_now_send(NULL, (uint8_t *)&answerData, sizeof(answerData));
 
         // TODO: Handle changing button colors but just testing bruh
       }
