@@ -10,43 +10,35 @@ int chan;
 enum MessageType
 {
   PAIRING,
-  DATA,
+  QUESTION,
+  ANSWER,
 };
 MessageType messageType;
 
 int counter = 0;
 
-// Structure example to receive data
-// Must match the sender structure
-typedef struct struct_message
+struct answer_message
 {
   uint8_t msgType;
   uint8_t id;
-  float temp;
-  float hum;
-  unsigned int readingId;
-} struct_message;
+  unsigned long timeToAnswer;
+  uint8_t answer;
+};
 
-typedef struct struct_pairing
-{ // new structure for pairing
+struct question_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  uint8_t answerAmount;
+};
+
+struct pairing_message
+{
   uint8_t msgType;
   uint8_t id;
   uint8_t macAddr[6];
   uint8_t channel;
-} struct_pairing;
-
-struct_message incomingReadings;
-struct_message outgoingSetpoints;
-struct_pairing pairingData;
-
-void readDataToSend()
-{
-  outgoingSetpoints.msgType = DATA;
-  outgoingSetpoints.id = 0;
-  outgoingSetpoints.temp = random(0, 40);
-  outgoingSetpoints.hum = random(0, 100);
-  outgoingSetpoints.readingId = counter++;
-}
+};
 
 // ---------------------------- esp_ now -------------------------
 void getMAC(char *buf, const uint8_t *mac_addr)
@@ -101,52 +93,47 @@ void OnDataSent(uint8_t *mac_addr, uint8_t status)
   D_println();
 }
 
-// void OnDataRecv(uint8_t *mac_addr, const uint8_t *incomingData, uint8_t len)
 void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
 {
   D_printf("\r\n --- \r\n%d bytes of data received from: ", len);
   printMAC(mac_addr);
   D_println();
-  StaticJsonDocument<1000> root;
-  String payload;
-  uint8_t type = incomingData[0]; // first message byte is the type of message
+
+  uint8_t type = incomingData[0];
   switch (type)
   {
-  case DATA: // the message is data type
-    memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
-    // create a JSON document with received data and send it by event to the web page
-    root["id"] = incomingReadings.id;
-    root["temperature"] = incomingReadings.temp;
-    root["humidity"] = incomingReadings.hum;
-    root["readingId"] = String(incomingReadings.readingId);
-    // serializeJson(root, payload);
-    Serial.print("event send :");
-    serializeJson(root, Serial);
-    // events.send(payload.c_str(), "new_readings", millis());
+  case ANSWER:
+    struct answer_message answerData;
+    memcpy(&answerData, incomingData, sizeof(answerData));
+    if (answerData.id == 0)
+      return;
+
+    D_printf("answer_message | id: %d | timeToAnswer: %ld | answer: %d", answerData.id, answerData.timeToAnswer, answerData.answer);
     D_println();
+
     break;
 
-  case PAIRING: // the message is a pairing request
+  case PAIRING:
+    struct pairing_message pairingData;
     memcpy(&pairingData, incomingData, sizeof(pairingData));
-    D_printf("msgtype: %d | id: %d | channel: %d\r\n", pairingData.msgType, pairingData.id, pairingData.channel);
+    if (pairingData.id == 0)
+      return;
+
+    D_printf("pairing_message | id: %d | channel: %d\r\n", pairingData.id, pairingData.channel);
     D_print("Pairing request from: ");
     printMAC(mac_addr);
     D_println();
-    if (pairingData.id > 0)
-    { // do not replay to server itself
-      if (pairingData.msgType == PAIRING)
-      {
-        char macStr[18];
-        getMAC(macStr, mac_addr);
 
-        StaticJsonDocument<128> doc;
-        doc["type"] = "pairing";
-        doc["data"]["id"] = pairingData.id;
-        doc["data"]["macaddr"] = macStr;
-        serializeJson(doc, Serial);
-        D_println();
-      }
-    }
+    char macStr[18];
+    getMAC(macStr, mac_addr);
+
+    StaticJsonDocument<128> doc;
+    doc["type"] = "pairing";
+    doc["data"]["id"] = pairingData.id;
+    doc["data"]["macaddr"] = macStr;
+    serializeJson(doc, Serial);
+    D_println();
+
     break;
   }
 }
@@ -201,14 +188,23 @@ void loop()
         uint8_t mac_addr[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         readMAC(macStr, mac_addr);
 
-        struct_pairing pairData;
-        pairData.msgType = PAIRING;
-        pairData.id = 0;
-        pairData.channel = chan;
-        WiFi.softAPmacAddress(pairData.macAddr);
+        struct pairing_message pairingData;
+        pairingData.msgType = PAIRING;
+        pairingData.id = 0;
+        pairingData.channel = chan;
+        WiFi.softAPmacAddress(pairingData.macAddr);
 
-        esp_now_send(mac_addr, (uint8_t *)&pairData, sizeof(pairData));
+        esp_now_send(mac_addr, (uint8_t *)&pairingData, sizeof(pairingData));
         addPeer(mac_addr);
+      }
+      else if (doc["type"] == "new_question")
+      {
+        struct question_message questionData;
+        questionData.msgType = QUESTION;
+        questionData.id = 0;
+        questionData.answerAmount = (uint8_t)doc["data"]["amount_answers"];
+
+        esp_now_send(NULL, (uint8_t *)&questionData, sizeof(questionData));
       }
     }
     else

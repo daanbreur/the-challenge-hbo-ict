@@ -21,26 +21,28 @@ struct
   uint8_t deviceId = 1;
 } settings;
 
-typedef struct struct_message
+struct answer_message
 {
   uint8_t msgType;
   uint8_t id;
-  float temp;
-  float hum;
-  unsigned int readingId;
-} struct_message;
+  unsigned long timeToAnswer;
+  uint8_t answer;
+};
 
-typedef struct struct_pairing
+struct question_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  uint8_t answerAmount;
+};
+
+struct pairing_message
 {
   uint8_t msgType;
   uint8_t id;
   uint8_t macAddr[6];
   uint8_t channel;
-} struct_pairing;
-
-struct_message myData;
-struct_message inData;
-struct_pairing pairingData;
+};
 
 enum PairingStatus
 {
@@ -54,35 +56,19 @@ PairingStatus pairingStatus = NOT_PAIRED;
 enum MessageType
 {
   PAIRING,
-  DATA,
+  QUESTION,
+  ANSWER,
 };
-MessageType messageType;
 
 int channel = 1;
 
-// simulate temperature and humidity data
-float t = 0;
-float h = 0;
+bool canAnswer = true; // TODO: default false
 
 unsigned long currentMillis = millis();
-unsigned long previousMillis = 0; // Stores last time temperature was published
-const long interval = 10000;      // Interval at which to publish sensor readings
-unsigned long start;              // used to measure Pairing time
-unsigned int readingId = 0;
-
-// simulate temperature reading
-float readDHTTemperature()
-{
-  t = random(0, 40);
-  return t;
-}
-
-// simulate humidity reading
-float readDHTHumidity()
-{
-  h = random(0, 100);
-  return h;
-}
+unsigned long previousMillis = 0;      // Stores last time temperature was published
+unsigned long startQuestionMillis = 0; // Stores start time of question for scoring reasons
+const long interval = 10000;           // Interval at which to publish sensor readings
+unsigned long start;                   // used to measure Pairing time
 
 void addPeer(uint8_t *mac_addr, uint8_t chan)
 {
@@ -113,42 +99,40 @@ void OnDataSent(uint8_t *mac_addr, uint8_t status)
 
 void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
 {
-  D_print("Packet received from: ");
+  D_printf("\r\n --- \r\n%d bytes of data received from: ", len);
   printMAC(mac_addr);
   D_println();
-  D_print("data size = ");
-  D_println(sizeof(incomingData));
+
   uint8_t type = incomingData[0];
   switch (type)
   {
-  case DATA: // we received data from server
-    memcpy(&inData, incomingData, sizeof(inData));
-    D_print("ID  = ");
-    D_println(inData.id);
-    D_print("Setpoint temp = ");
-    D_println(inData.temp);
-    D_print("SetPoint humidity = ");
-    D_println(inData.hum);
-    D_print("reading Id  = ");
-    D_println(inData.readingId);
+  case QUESTION:
+    struct question_message questionData;
+    memcpy(&questionData, incomingData, sizeof(questionData));
+    if (questionData.id != 0)
+      return;
 
+    D_printf("Device ID: %d | Amount of buttons: %d", questionData.id, questionData.answerAmount);
+    D_println();
     break;
 
   case PAIRING: // we received pairing data from server
+    struct pairing_message pairingData;
     memcpy(&pairingData, incomingData, sizeof(pairingData));
-    if (pairingData.id == 0)
-    { // the message comes from server
-      printMAC(mac_addr);
-      D_print("Pairing done for ");
-      printMAC(pairingData.macAddr);
-      D_print(" on channel ");
-      D_print(pairingData.channel); // channel used by the server
-      D_print(" in ");
-      D_print(millis() - start);
-      D_println("ms");
-      addPeer(pairingData.macAddr, pairingData.channel); // add the server  to the peer list
-      pairingStatus = PAIR_PAIRED;                       // set the pairing status
-    }
+    if (pairingData.id != 0)
+      return;
+
+    printMAC(mac_addr);
+    D_print("Pairing done for ");
+    printMAC(pairingData.macAddr);
+    D_print(" on channel ");
+    D_print(pairingData.channel); // channel used by the server
+    D_print(" in ");
+    D_print(millis() - start);
+    D_println("ms");
+    addPeer(pairingData.macAddr, pairingData.channel); // add the server  to the peer list
+    pairingStatus = PAIR_PAIRED;                       // set the pairing status
+
     break;
   }
 }
@@ -157,13 +141,16 @@ PairingStatus autoPairing()
 {
   switch (pairingStatus)
   {
+  case NOT_PAIRED:
   case PAIR_REQUEST:
+    struct pairing_message pairingData;
     D_print("Pairing request on channel ");
     D_println(channel);
 
     pairingData.msgType = PAIRING;
     pairingData.id = settings.deviceId;
     pairingData.channel = channel;
+    WiFi.softAPmacAddress(pairingData.macAddr);
 
     addPeer(serverAddress, channel);
     esp_now_send(serverAddress, (uint8_t *)&pairingData, sizeof(pairingData));
@@ -265,32 +252,27 @@ void loop()
     buttons[i].update();
   }
 
-  for (int i = 0; i < 4; i++)
-  {
-    if (buttons[i].pressed())
-    {
-      setBlockColor(i + 1, randomColor());
-    }
-    else if (buttons[i].released())
-    {
-      setBlockColor(i + 1, CRGB::Black, 100, 0, 0);
-    }
-  }
-
   if (autoPairing() == PAIR_PAIRED)
   {
     unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= interval)
+
+    for (int i = 0; i < 4; i++)
     {
-      // Save the last time a new reading was published
-      previousMillis = currentMillis;
-      // Set values to send
-      myData.msgType = DATA;
-      myData.id = settings.deviceId;
-      myData.temp = readDHTTemperature();
-      myData.hum = readDHTHumidity();
-      myData.readingId = readingId++;
-      esp_now_send(serverAddress, (uint8_t *)&myData, sizeof(myData));
+      if (buttons[i].pressed() && canAnswer)
+      {
+        // canAnswer = false; // TODO: reset to false
+        unsigned long timeToAnswer = currentMillis - startQuestionMillis;
+
+        struct answer_message answerData;
+        answerData.msgType = QUESTION;
+        answerData.id = settings.deviceId;
+        answerData.timeToAnswer = timeToAnswer;
+        answerData.answer = (uint8_t)(i + 1);
+
+        esp_now_send(serverAddress, (uint8_t *)&answerData, sizeof(answerData));
+
+        // TODO: Handle changing button colors but just testing bruh
+      }
     }
   }
 
