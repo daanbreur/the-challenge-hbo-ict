@@ -63,6 +63,7 @@ enum MessageType
 int channel = 1;
 
 bool canAnswer = true; // TODO: default false
+bool activeButtons[4] = {false, false, false, false};
 
 unsigned long currentMillis = millis();
 unsigned long previousMillis = 0;      // Stores last time temperature was published
@@ -114,6 +115,37 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
 
     D_printf("Device ID: %d | Amount of buttons: %d", questionData.id, questionData.answerAmount);
     D_println();
+
+    canAnswer = false;
+    for (int j = 0; j < 4; j++)
+    {
+      activeButtons[j] = false;
+      setBlockColor(j + 1, CRGB::Black, 100, 0, 0);
+    }
+
+    if (questionData.answerAmount >= 1)
+    {
+      canAnswer = true;
+      activeButtons[0] = true;
+      setBlockColor(1, CRGB::Cyan, 100, 0, 0);
+    }
+    if (questionData.answerAmount >= 2)
+    {
+      activeButtons[1] = true;
+      setBlockColor(2, CRGB::Magenta, 100, 0, 0);
+    }
+    if (questionData.answerAmount >= 3)
+    {
+      activeButtons[2] = true;
+      setBlockColor(3, CRGB::Yellow, 100, 0, 0);
+    }
+    if (questionData.answerAmount >= 4)
+    {
+      activeButtons[3] = true;
+      setBlockColor(4, CRGB(25, 255, 25), 100, 0, 0);
+    }
+
+    startQuestionMillis = millis();
     break;
 
   case PAIRING: // we received pairing data from server
@@ -158,12 +190,10 @@ PairingStatus autoPairing()
     break;
 
   case PAIR_REQUESTED:
-    // time out to allow receiving response from server
     currentMillis = millis();
     if (currentMillis - previousMillis > 1000)
     {
       previousMillis = currentMillis;
-      // time out expired,  try next channel
       channel++;
       if (channel > MAX_CHANNEL)
       {
@@ -246,6 +276,8 @@ void setup()
 
 void loop()
 {
+  // TODO: implement status led
+
   for (int i = 0; i < 4; i++)
   {
     buttons[i].update();
@@ -257,13 +289,19 @@ void loop()
 
     for (int i = 0; i < 4; i++)
     {
-      if (buttons[i].pressed() && canAnswer)
+      if (buttons[i].pressed() && canAnswer && activeButtons[i])
       {
-        // canAnswer = false; // TODO: reset to false
+        canAnswer = false;
+        for (int j = 0; j < 4; j++)
+        {
+          activeButtons[j] = false;
+          setBlockColor(j + 1, CRGB::Black, 100, 0, 0);
+        }
+
         unsigned long timeToAnswer = currentMillis - startQuestionMillis;
 
         struct answer_message answerData;
-        answerData.msgType = QUESTION;
+        answerData.msgType = ANSWER;
         answerData.id = settings.deviceId;
         answerData.timeToAnswer = timeToAnswer;
         answerData.answer = (uint8_t)(i + 1);

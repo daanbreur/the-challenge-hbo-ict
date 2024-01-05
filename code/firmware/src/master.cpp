@@ -99,6 +99,7 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
   printMAC(mac_addr);
   D_println();
 
+  StaticJsonDocument<128> doc;
   uint8_t type = incomingData[0];
   switch (type)
   {
@@ -109,6 +110,13 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
       return;
 
     D_printf("answer_message | id: %d | timeToAnswer: %ld | answer: %d", answerData.id, answerData.timeToAnswer, answerData.answer);
+    D_println();
+
+    doc["type"] = "answer";
+    doc["data"]["id"] = answerData.id;
+    doc["data"]["timeToAnswer"] = answerData.timeToAnswer;
+    doc["data"]["answer"] = answerData.answer;
+    serializeJson(doc, Serial);
     D_println();
 
     break;
@@ -127,7 +135,6 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     char macStr[18];
     getMAC(macStr, mac_addr);
 
-    StaticJsonDocument<128> doc;
     doc["type"] = "pairing";
     doc["data"]["id"] = pairingData.id;
     doc["data"]["macaddr"] = macStr;
