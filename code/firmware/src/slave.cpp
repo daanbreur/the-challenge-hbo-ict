@@ -65,6 +65,7 @@ int channel = 1;
 bool canAnswer = true; // TODO: default false
 bool activeButtons[4] = {false, false, false, false};
 
+unsigned long lastStatusUpdate = 0;
 unsigned long currentMillis = millis();
 unsigned long previousMillis = 0;      // Stores last time temperature was published
 unsigned long startQuestionMillis = 0; // Stores start time of question for scoring reasons
@@ -111,6 +112,9 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     struct question_message questionData;
     memcpy(&questionData, incomingData, sizeof(questionData));
     if (questionData.id != 0)
+      return;
+
+    if (pairingStatus != PAIR_PAIRED)
       return;
 
     D_printf("Device ID: %d | Amount of buttons: %d", questionData.id, questionData.answerAmount);
@@ -224,7 +228,7 @@ void initESP_NOW()
 void setup()
 {
   Serial.begin(115200);
-  D_println();
+  Serial.println();
 
   // Load settings from EEPROM
 
@@ -277,6 +281,34 @@ void setup()
 void loop()
 {
   // TODO: implement status led
+
+  if (millis() - lastStatusUpdate > 1000)
+  {
+    if (pairingStatus == PAIR_REQUEST || pairingStatus == PAIR_REQUESTED)
+    {
+      addBlockTransitionToStack(0, CRGB::Blue, 100, 0, 0);
+      addBlockTransitionToStack(0, CRGB::Black, 100, 0, 0);
+    }
+
+    if (usbPowerConnected() == true && isCharging() == false)
+    {
+      D_println("powerstatus | USB Power Connected");
+      addBlockTransitionToStack(0, CRGB::Green, 100, 0, 0);
+      addBlockTransitionToStack(0, CRGB::Black, 100, 0, 0);
+    }
+    else if (usbPowerConnected() == true && isCharging() == true)
+    {
+      D_println("powerstatus | Charging");
+      addBlockTransitionToStack(0, CRGB::Red, 100, 0, 0);
+      addBlockTransitionToStack(0, CRGB::Black, 100, 0, 0);
+    }
+
+    if (usbPowerConnected() == false)
+    {
+      D_println("powerstatus | USB Power Disconnected");
+      addBlockTransitionToStack(0, CRGB::Green, 100, 0, 0);
+    }
+  }
 
   for (int i = 0; i < 4; i++)
   {

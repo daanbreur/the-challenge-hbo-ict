@@ -40,7 +40,6 @@ struct pairing_message
   uint8_t channel;
 };
 
-// ---------------------------- esp_ now -------------------------
 void getMAC(char *buf, const uint8_t *mac_addr)
 {
   sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
@@ -117,7 +116,7 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     doc["data"]["timeToAnswer"] = answerData.timeToAnswer;
     doc["data"]["answer"] = answerData.answer;
     serializeJson(doc, Serial);
-    D_println();
+    Serial.println();
 
     break;
 
@@ -139,7 +138,7 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     doc["data"]["id"] = pairingData.id;
     doc["data"]["macaddr"] = macStr;
     serializeJson(doc, Serial);
-    D_println();
+    Serial.println();
 
     break;
   }
@@ -160,8 +159,8 @@ void initESP_NOW()
 void setup()
 {
   Serial.begin(115200);
+  Serial.println();
 
-  D_println();
   WiFi.mode(WIFI_STA);
   chan = 10; // TODO: Bedenk ff iets logisch voor channel scanning.
 
@@ -173,15 +172,6 @@ void setup()
 
 void loop()
 {
-  // static unsigned long lastEventTime = millis();
-  // static const unsigned long EVENT_INTERVAL_MS = 5000;
-  // if ((millis() - lastEventTime) > EVENT_INTERVAL_MS)
-  // {
-  //   lastEventTime = millis();
-  //   readDataToSend();
-  //   esp_now_send(NULL, (uint8_t *)&outgoingSetpoints, sizeof(outgoingSetpoints));
-  // }
-
   if (Serial.available())
   {
     StaticJsonDocument<128> doc;
