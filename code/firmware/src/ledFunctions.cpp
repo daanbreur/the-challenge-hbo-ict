@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "Pins.h"
+#include "Globals.h"
 #include "FastLED.h"
 
 CRGB leds_buffer[NUM_LEDS];
@@ -114,7 +115,7 @@ bool ledHasTransition(int ledIndex) {
  */
 void setupLeds(){
   FastLED.addLeds<WS2812B, LEDS_DATA, RGB>(leds_buffer, NUM_LEDS);
-  FastLED.setBrightness(255);
+  FastLED.setBrightness(128);
 }
 
 class ledTransition { 
