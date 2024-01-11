@@ -58,11 +58,20 @@ bool setBlockColor(int blockIndex, CRGB color, int fadeTime = 0, int startDelay 
   };
 
   switch (blockIndex) {
+    #ifdef CCLICKER
     case 0: setLedColor(0, color, fadeTime, startDelay); break;
     case 1: setBlockLeds(1, 4); break;
     case 2: setBlockLeds(5, 4); break;
     case 3: setBlockLeds(9, 4); break;
     case 4: setBlockLeds(13, 4); break;
+    #endif
+    #ifdef CCLICKERV2
+    case 0: setLedColor(2, color, fadeTime, startDelay); break;
+    case 1: setBlockLeds(0, 2); break;
+    case 2: setBlockLeds(3, 2); break;
+    case 3: setBlockLeds(5, 2); break;
+    case 4: setBlockLeds(7, 2); break;
+    #endif
   }
 
   return false;
