@@ -213,7 +213,6 @@ bool addBlockTransitionToStack(int blockIndex, CRGB color, int fadeTime = 0, int
     case 3: addBlockLeds(5, 2); break;
     case 4: addBlockLeds(7, 2); break;
     #endif
-
   }
 
   return false;
