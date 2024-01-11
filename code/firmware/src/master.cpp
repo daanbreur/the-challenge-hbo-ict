@@ -13,6 +13,7 @@ enum MessageType
   QUESTION,
   END_QUESTION,
   ANSWER,
+  POWER_STATUS,
 };
 MessageType messageType;
 
@@ -46,6 +47,15 @@ struct pairing_message
   uint8_t id;
   uint8_t macAddr[6];
   uint8_t channel;
+};
+
+struct power_status_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  bool isCharging;
+  bool usbPowerConnected;
+  float batteryVoltage;
 };
 
 void getMAC(char *buf, const uint8_t *mac_addr)
@@ -110,6 +120,25 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
   uint8_t type = incomingData[0];
   switch (type)
   {
+  case POWER_STATUS:
+    struct power_status_message powerStatusData;
+    memcpy(&powerStatusData, incomingData, sizeof(powerStatusData));
+    if (powerStatusData.id == 0)
+      return;
+
+    // D_printf("power_status_message | id: %d | charging: %ld | answer: %d", answerData.id, answerData.timeToAnswer, answerData.answer);
+    // D_println();
+
+    doc["type"] = "power_status";
+    doc["data"]["id"] = powerStatusData.id;
+    doc["data"]["charging"] = powerStatusData.isCharging;
+    doc["data"]["usbPower"] = powerStatusData.usbPowerConnected;
+    doc["data"]["voltage"] = powerStatusData.batteryVoltage;
+    serializeJson(doc, Serial);
+    Serial.println();
+
+    break;
+    
   case ANSWER:
     struct answer_message answerData;
     memcpy(&answerData, incomingData, sizeof(answerData));

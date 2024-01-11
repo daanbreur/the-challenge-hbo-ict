@@ -51,6 +51,15 @@ struct pairing_message
   uint8_t channel;
 };
 
+struct power_status_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  bool isCharging;
+  bool usbPowerConnected;
+  float batteryVoltage;
+};
+
 enum PairingStatus
 {
   NOT_PAIRED,
@@ -66,6 +75,7 @@ enum MessageType
   QUESTION,
   END_QUESTION,
   ANSWER,
+  POWER_STATUS,
 };
 
 int channel = 1;
@@ -76,6 +86,7 @@ bool activeButtons[4] = {false, false, false, false};
 unsigned long lastStatusUpdate = 0;
 unsigned long currentMillis = millis();
 unsigned long previousMillis = 0;      // Stores last time temperature was published
+unsigned long lastPowerStatusUpdate = 0;
 unsigned long startQuestionMillis = 0; // Stores start time of question for scoring reasons
 const long interval = 10000;           // Interval at which to publish sensor readings
 unsigned long start;                   // used to measure Pairing time
@@ -316,8 +327,6 @@ void setup()
 
 void loop()
 {
-  // TODO: implement status led
-
   if (millis() - lastStatusUpdate > 1000)
   {
     if (pairingStatus == PAIR_REQUEST || pairingStatus == PAIR_REQUESTED)
@@ -355,6 +364,18 @@ void loop()
   {
     unsigned long currentMillis = millis();
 
+    if (currentMillis - lastPowerStatusUpdate > 10000) {
+      struct power_status_message powerStatusData;
+      powerStatusData.msgType = POWER_STATUS;
+      powerStatusData.id = settings.deviceId;
+      powerStatusData.isCharging = isCharging();
+      powerStatusData.usbPowerConnected = usbPowerConnected();
+      powerStatusData.batteryVoltage = batteryVoltage();
+
+      esp_now_send(NULL, (uint8_t *)&powerStatusData, sizeof(powerStatusData));
+      lastPowerStatusUpdate = currentMillis;
+    }
+
     for (int i = 0; i < 4; i++)
     {
       if (buttons[i].pressed() && canAnswer && activeButtons[i])
@@ -376,8 +397,6 @@ void loop()
         lastPressedAnswer = (uint8_t)(i + 1);
 
         esp_now_send(NULL, (uint8_t *)&answerData, sizeof(answerData));
-
-        // TODO: Handle changing button colors but just testing bruh
       }
     }
   }
