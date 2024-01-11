@@ -71,6 +71,7 @@ unsigned long previousMillis = 0;      // Stores last time temperature was publi
 unsigned long startQuestionMillis = 0; // Stores start time of question for scoring reasons
 const long interval = 10000;           // Interval at which to publish sensor readings
 unsigned long start;                   // used to measure Pairing time
+uint8_t lastPressedAnswer = 0;             // used to store last pressed answer
 
 void addPeer(uint8_t *mac_addr, uint8_t chan)
 {
@@ -337,6 +338,8 @@ void loop()
         answerData.id = settings.deviceId;
         answerData.timeToAnswer = timeToAnswer;
         answerData.answer = (uint8_t)(i + 1);
+
+        lastPressedAnswer = (uint8_t)(i + 1);
 
         esp_now_send(NULL, (uint8_t *)&answerData, sizeof(answerData));
 

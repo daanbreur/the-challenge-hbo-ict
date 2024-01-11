@@ -199,11 +199,21 @@ bool addBlockTransitionToStack(int blockIndex, CRGB color, int fadeTime = 0, int
   };
 
   switch (blockIndex) {
+    #ifdef CCLICKER
     case 0: addLedTransitionToStack(0, color, fadeTime, startDelay); break;
     case 1: addBlockLeds(1, 4); break;
     case 2: addBlockLeds(5, 4); break;
     case 3: addBlockLeds(9, 4); break;
     case 4: addBlockLeds(13, 4); break;
+    #endif
+    #ifdef CCLICKERV2
+    case 0: addLedTransitionToStack(2, color, fadeTime, startDelay); break;
+    case 1: addBlockLeds(0, 2); break;
+    case 2: addBlockLeds(3, 2); break;
+    case 3: addBlockLeds(5, 2); break;
+    case 4: addBlockLeds(7, 2); break;
+    #endif
+
   }
 
   return false;
