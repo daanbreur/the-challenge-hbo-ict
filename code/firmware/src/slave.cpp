@@ -36,6 +36,13 @@ struct question_message
   uint8_t answerAmount;
 };
 
+struct end_question_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  uint8_t answer;
+};
+
 struct pairing_message
 {
   uint8_t msgType;
@@ -57,6 +64,7 @@ enum MessageType
 {
   PAIRING,
   QUESTION,
+  END_QUESTION,
   ANSWER,
 };
 
@@ -109,6 +117,32 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
   uint8_t type = incomingData[0];
   switch (type)
   {
+  case END_QUESTION:
+    struct end_question_message endQuestionData;
+    memcpy(&endQuestionData, incomingData, sizeof(endQuestionData));
+    if (endQuestionData.id != 0)
+      return;
+
+    if (pairingStatus != PAIR_PAIRED)
+      return;
+
+    D_printf("Device ID: %d | Correct answer: %d", endQuestionData.id, endQuestionData.answer);
+    D_println();
+
+    canAnswer = false;
+    for (int j = 0; j < 4; j++)
+    {
+      activeButtons[j] = false;
+      if (lastPressedAnswer != endQuestionData.answer) {
+        setBlockColor(j + 1, CRGB::Red, 100, 0, 0);
+      } else {
+        setBlockColor(j + 1, CRGB::Green, 100, 0, 0);
+      }
+    }
+
+    lastPressedAnswer = 0;    
+    break;
+
   case QUESTION:
     struct question_message questionData;
     memcpy(&questionData, incomingData, sizeof(questionData));
@@ -122,6 +156,7 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
     D_println();
 
     canAnswer = false;
+    lastPressedAnswer = 0;
     for (int j = 0; j < 4; j++)
     {
       activeButtons[j] = false;
@@ -338,7 +373,6 @@ void loop()
         answerData.id = settings.deviceId;
         answerData.timeToAnswer = timeToAnswer;
         answerData.answer = (uint8_t)(i + 1);
-
         lastPressedAnswer = (uint8_t)(i + 1);
 
         esp_now_send(NULL, (uint8_t *)&answerData, sizeof(answerData));

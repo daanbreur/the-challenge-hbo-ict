@@ -11,6 +11,7 @@ enum MessageType
 {
   PAIRING,
   QUESTION,
+  END_QUESTION,
   ANSWER,
 };
 MessageType messageType;
@@ -30,6 +31,13 @@ struct question_message
   uint8_t msgType;
   uint8_t id;
   uint8_t answerAmount;
+};
+
+struct end_question_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  uint8_t answer;
 };
 
 struct pairing_message
@@ -202,6 +210,15 @@ void loop()
         questionData.answerAmount = (uint8_t)doc["data"]["amount_answers"];
 
         esp_now_send(NULL, (uint8_t *)&questionData, sizeof(questionData));
+      }
+      else if (doc["type"] == "end_question")
+      {
+        struct end_question_message endQuestionData;
+        endQuestionData.msgType = END_QUESTION;
+        endQuestionData.id = 0;
+        endQuestionData.answer = (uint8_t)doc["data"]["correct_answer"];
+
+        esp_now_send(NULL, (uint8_t *)&endQuestionData, sizeof(endQuestionData));
       }
     }
     else
