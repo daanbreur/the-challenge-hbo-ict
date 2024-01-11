@@ -14,6 +14,7 @@ enum MessageType
   END_QUESTION,
   ANSWER,
   POWER_STATUS,
+  UNPAIR,
 };
 MessageType messageType;
 
@@ -58,6 +59,13 @@ struct power_status_message
   float batteryVoltage;
 };
 
+struct unpair_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  uint8_t macAddr[6];
+};
+
 void getMAC(char *buf, const uint8_t *mac_addr)
 {
   sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x",
@@ -99,6 +107,30 @@ bool addPeer(uint8_t *peer_addr)
       D_println("");
       return false;
     }
+  }
+}
+
+bool removePeer(uint8_t *peer_addr)
+{
+  if (esp_now_is_peer_exist(peer_addr))
+  {
+    if (esp_now_del_peer(peer_addr) == 0)
+    {
+      D_println("Remove success");
+      return true;
+    }
+    else
+    {
+      D_print("Failed to remove peer: ");
+      printMAC(peer_addr);
+      D_println("");
+      return false;
+    }
+  }
+  else
+  {
+    D_println("Peer does not exist");
+    return true;
   }
 }
 
@@ -216,7 +248,20 @@ void loop()
 
     if (err == DeserializationError::Ok)
     {
-      if (doc["type"] == "accept_pairing")
+      if (doc["type"] == "remove_pairing")
+      {
+        const char *macStr = doc["data"]["macaddr"];
+        uint8_t mac_addr[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        readMAC(macStr, mac_addr);
+
+        struct unpair_message unpairingData;
+        unpairingData.msgType = UNPAIR;
+        unpairingData.id = 0;
+
+        esp_now_send(mac_addr, (uint8_t *)&unpairingData, sizeof(unpairingData));
+        removePeer(mac_addr);
+      }
+      else if (doc["type"] == "accept_pairing")
       {
         const char *macStr = doc["data"]["macaddr"];
         uint8_t mac_addr[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};

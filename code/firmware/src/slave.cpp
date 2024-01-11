@@ -60,6 +60,13 @@ struct power_status_message
   float batteryVoltage;
 };
 
+struct unpair_message
+{
+  uint8_t msgType;
+  uint8_t id;
+  uint8_t macAddr[6];
+};
+
 enum PairingStatus
 {
   NOT_PAIRED,
@@ -76,6 +83,7 @@ enum MessageType
   END_QUESTION,
   ANSWER,
   POWER_STATUS,
+  UNPAIR,
 };
 
 int channel = 1;
@@ -128,6 +136,19 @@ void OnDataRecv(uint8_t *mac_addr, uint8_t *incomingData, uint8_t len)
   uint8_t type = incomingData[0];
   switch (type)
   {
+  case UNPAIR:
+    struct unpair_message unpairData;
+    memcpy(&unpairData, incomingData, sizeof(unpairData));
+    if (unpairData.id != 0)
+      return;
+
+    if (pairingStatus != PAIR_PAIRED)
+      return;
+
+    //reset esp device
+    ESP.restart();
+    
+    break;
   case END_QUESTION:
     struct end_question_message endQuestionData;
     memcpy(&endQuestionData, incomingData, sizeof(endQuestionData));
