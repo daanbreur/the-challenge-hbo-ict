@@ -2,11 +2,14 @@ name: Publish
 on:
   push:
     tags:
-      - 'v*'
-      - 'beta-v*'
+      - "v*"
+      - "beta-v*"
 jobs:
   publish:
     runs-on: ${{ matrix.os }}
+
+    env:
+      working-directory: ./code/ClickerCompanion
 
     strategy:
       matrix:
@@ -20,15 +23,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 19.3.0
-          cache: npm
 
       - name: Install and build
+        working-directory: ${{env.working-directory}}
         run: |
           npm install
           npm run postinstall
           npm run build
 
       - name: Publish releases
+        working-directory: ${{env.working-directory}}
         env:
           # # These values are used for auto updates signing
           # APPLE_ID: ${{ secrets.APPLE_ID }}
