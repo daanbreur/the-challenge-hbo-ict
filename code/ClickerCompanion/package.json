@@ -163,6 +163,7 @@
   },
   "build": {
     "productName": "ClickerCompanion",
+    "artifactName": "clickercompanion-setup.${ext}",
     "appId": "org.erb.ClickerCompanion",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
