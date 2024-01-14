@@ -6,27 +6,36 @@
   :root {
     --text: #fefbfe;
     --black-text: #040104;
+    --gray-text: #cccccc;
     --background: #f3edf3;
-    --light-background: #404040;
-    --primary: #4d1d4e;
-    --secondary: #e7c3e9;
-    --accent: #9f3da4;
-    --button1: #e9f374;
-    --button2: #56e353;
-    --button3: #f44747;
-    --button4: #497af9;
+    --medium-background: #2d2d2d;
+    --light-background: #3b3b3b;
+    --accent: #ed018a;
   }
   .dark {
     --text: #fefbfe;
     --black-text: #040104;
+    --gray-text: #cccccc;
     --background: #202020;
-    --light-background: #404040;
-    --primary: #e1b1e2;
-    --secondary: #3a163c;
-    --accent: #44aee3;
-    --button1: #e9f374;
-    --button2: #56e353;
-    --button3: #f44747;
-    --button4: #497af9;
+    --medium-background: #2d2d2d;
+    --light-background: #3b3b3b;
+    --accent: #ed018a;
   }
+}
+::-webkit-scrollbar {
+  width: 7px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 5px;
+}
+
+* {
+  min-height: 0;
 }

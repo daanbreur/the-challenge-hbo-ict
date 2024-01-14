@@ -1,61 +1,30 @@
 import { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Quiz from './pages/Quiz';
-// eslint-disable-next-line import/no-cycle
-import Overview from './pages/Overview';
-import Devices from './pages/Devices';
-import Settings from './pages/Settings';
+import Home from './pages/menuview/Home';
+import Quizzes from './pages/menuview/Quizzes';
+import Reports from './pages/menuview/Reports';
+import Settings from './pages/menuview/Settings';
 
-import { IPageNames, IQuiz, ISettings } from './types';
+import { IPageNames } from './types';
 
 import './globals.css';
 import './fonts.css';
 import 'tailwindcss/tailwind.css';
 
 function Renderer() {
-  const [currentPage, setCurrentPage] = useState<IPageNames>('overview');
-  const [selectedQuiz, setSelectedQuiz] = useState<IQuiz>({} as IQuiz);
-  const [settings, setSettings] = useState<ISettings>({} as ISettings);
-  // const [connectedDevices, setConnectDevices] = useState();
+  const [currentPage, setCurrentPage] = useState<IPageNames>('home');
+  // const [selectedQuiz, setSelectedQuiz] = useState<IQuiz>({} as IQuiz);
 
-  if (currentPage === 'quiz-selection')
-    return (
-      <Quiz
-        setCurrentPage={setCurrentPage}
-        setSelectedQuiz={setSelectedQuiz}
-        selectedQuiz={selectedQuiz}
-        settings={settings}
-      />
-    );
-  if (currentPage === 'devices')
-    return (
-      <Devices
-        setCurrentPage={setCurrentPage}
-        setSelectedQuiz={setSelectedQuiz}
-        selectedQuiz={selectedQuiz}
-        settings={settings}
-      />
-    );
+  if (currentPage === 'quizzes')
+    return <Quizzes setCurrentPage={setCurrentPage} />;
+  if (currentPage === 'reports')
+    return <Reports setCurrentPage={setCurrentPage} />;
   if (currentPage === 'settings')
-    return (
-      <Settings
-        setCurrentPage={setCurrentPage}
-        setSelectedQuiz={setSelectedQuiz}
-        selectedQuiz={selectedQuiz}
-        setSettings={setSettings}
-        settings={settings}
-      />
-    );
+    return <Settings setCurrentPage={setCurrentPage} />;
+  if (currentPage === 'home') return <Home setCurrentPage={setCurrentPage} />;
 
-  return (
-    <Overview
-      setCurrentPage={setCurrentPage}
-      setSelectedQuiz={setSelectedQuiz}
-      selectedQuiz={selectedQuiz}
-      settings={settings}
-    />
-  );
+  return <Home setCurrentPage={setCurrentPage} />;
 }
 
 export default function App() {

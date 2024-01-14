@@ -24,7 +24,9 @@ module.exports = {
     colors: {
       text: 'var(--text)',
       black_text: 'var(--black-text)',
+      gray_text: 'var(--gray-text)',
       background: 'var(--background)',
+      medium_background: 'var(--medium-background)',
       light_background: 'var(--light-background)',
       primary: 'var(--primary)',
       secondary: 'var(--secondary)',
@@ -33,6 +35,9 @@ module.exports = {
       button2: 'var(--button2)',
       button3: 'var(--button3)',
       button4: 'var(--button4)',
+    },
+    borderRadius: {
+      default: '10px',
     },
     extend: {},
   },

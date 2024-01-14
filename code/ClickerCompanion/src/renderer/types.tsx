@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type IPageNames = 'overview' | 'quiz-selection' | 'devices' | 'settings';
+export type IPageNames = 'home' | 'quizzes' | 'reports' | 'settings';
 
 export type IDatabaseQuery =
   | {
@@ -22,8 +22,6 @@ export type IDatabaseQuery =
       requestFor: 'question';
       questionId: Number;
     };
-
-export interface ISettings {}
 
 export interface IDevice {} // TODO: fix this as well
 
@@ -65,7 +63,6 @@ export interface IRoom {
 
 export type Props = {
   setCurrentPage: React.Dispatch<React.SetStateAction<IPageNames>>;
-  setSelectedQuiz: React.Dispatch<React.SetStateAction<IQuiz>>;
-  selectedQuiz: IQuiz;
-  settings: ISettings;
+  // setSelectedQuiz: React.Dispatch<React.SetStateAction<IQuiz>>;
+  // selectedQuiz: IQuiz;
 };
