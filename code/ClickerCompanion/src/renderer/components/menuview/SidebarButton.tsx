@@ -14,7 +14,7 @@ export default function SidebarButton({
   children,
   setCurrentPage,
 }: IProps & {
-  setCurrentPage: React.Dispatch<React.SetStateAction<IPageNames | String>>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<IPageNames>>;
 }) {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events

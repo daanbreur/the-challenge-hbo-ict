@@ -6,7 +6,7 @@ import * as Icons from 'react-icons/bi';
 
 import SidebarButton from './SidebarButton';
 import { IPageNames } from '../../types';
-import logo from '../../../../assets/v3logo/ClickerCompanion.png';
+import logo from '../../../../assets/logo.svg';
 
 export default function Sidebar({
   setCurrentPage,
